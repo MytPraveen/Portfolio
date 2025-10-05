@@ -1,3 +1,4 @@
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,12 +21,16 @@
             --light: #ecf0f1;
             --dark: #2c3e50;
             --gray: #95a5a6;
+            --background: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
         }
 
         body {
-            background-color: #f9f9f9;
-            color: #333;
+            background: linear-gradient(135deg, var(--background), #1e3a8a);
+            color: var(--text-light);
             line-height: 1.6;
+            min-height: 100vh;
         }
 
         .container {
@@ -36,34 +41,59 @@
 
         /* Header Styles */
         header {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: white;
-            padding: 60px 0;
+            padding: 80px 0 60px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.1"><polygon points="1000,100 1000,0 0,100"/></svg>');
+            background-size: cover;
         }
 
         .profile-img {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            border: 5px solid white;
+            border: 5px solid rgba(255, 255, 255, 0.3);
             margin: 0 auto 20px;
-            background-color: var(--light);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 60px;
-            color: var(--primary);
+            color: white;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
         .header-content h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e0f7fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .header-content p {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
             opacity: 0.9;
         }
 
@@ -71,87 +101,146 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 25px;
             margin-top: 20px;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-item i {
+            font-size: 1.2rem;
         }
 
         /* Section Styles */
         section {
-            padding: 60px 0;
+            padding: 80px 0;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 40px;
-            color: var(--secondary);
+            margin-bottom: 50px;
             position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
         }
 
         .section-title::after {
             content: '';
             display: block;
-            width: 80px;
+            width: 100px;
             height: 4px;
-            background-color: var(--primary);
-            margin: 10px auto;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            margin: 15px auto;
+            border-radius: 2px;
         }
 
         /* About Section */
         .about-content {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            max-width: 800px;
+            gap: 25px;
+            max-width: 900px;
             margin: 0 auto;
             text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
         }
 
         .highlight {
-            color: var(--primary);
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: 600;
         }
 
         /* Skills Section */
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
 
         .skill-card {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
         }
 
         .skill-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .skill-icon {
-            font-size: 40px;
-            color: var(--primary);
-            margin-bottom: 15px;
+            font-size: 50px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .skill-card h3 {
-            margin-bottom: 15px;
-            color: var(--secondary);
+            margin-bottom: 20px;
+            color: var(--text-light);
+            font-size: 1.4rem;
+        }
+
+        .skill-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
         }
 
         /* Experience Section */
         .timeline {
             position: relative;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -159,15 +248,16 @@
             content: '';
             position: absolute;
             width: 6px;
-            background-color: var(--primary);
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
             top: 0;
             bottom: 0;
             left: 50%;
             margin-left: -3px;
+            border-radius: 3px;
         }
 
         .timeline-item {
-            padding: 10px 40px;
+            padding: 20px 40px;
             position: relative;
             width: 50%;
             box-sizing: border-box;
@@ -182,22 +272,33 @@
         }
 
         .timeline-content {
-            padding: 20px 30px;
-            background-color: white;
+            padding: 30px;
+            background: var(--card-bg);
             position: relative;
-            border-radius: 6px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .timeline-content h3 {
             margin-bottom: 10px;
-            color: var(--secondary);
+            color: var(--text-light);
+            font-size: 1.3rem;
         }
 
         .timeline-content .date {
             font-weight: bold;
-            color: var(--primary);
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .timeline-content .company {
+            color: #94a3b8;
+            margin-bottom: 15px;
+            font-style: italic;
         }
 
         .timeline-content ul {
@@ -205,7 +306,9 @@
         }
 
         .timeline-content li {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+            line-height: 1.6;
         }
 
         .timeline-item::after {
@@ -214,9 +317,9 @@
             width: 25px;
             height: 25px;
             right: -13px;
-            background-color: white;
-            border: 4px solid var(--primary);
-            top: 15px;
+            background: var(--card-bg);
+            border: 4px solid #3b82f6;
+            top: 30px;
             border-radius: 50%;
             z-index: 1;
         }
@@ -230,58 +333,86 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 30px;
         }
 
         .cert-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            width: 250px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 300px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-5px);
         }
 
         .cert-card h3 {
-            color: var(--secondary);
-            margin-bottom: 10px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .cert-card p {
+            color: #94a3b8;
         }
 
         /* Footer */
         footer {
-            background-color: var(--secondary);
+            background: linear-gradient(135deg, #1e293b, #0f172a);
             color: white;
             text-align: center;
-            padding: 30px 0;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             margin-top: 20px;
         }
 
         .social-links a {
             color: white;
-            font-size: 20px;
-            transition: color 0.3s ease;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            padding: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .social-links a:hover {
-            color: var(--primary);
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-content h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .contact-info {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
+            }
+            
+            .contact-item {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
             }
             
             .skills-grid {
@@ -309,6 +440,22 @@
             .timeline-item:nth-child(even)::after {
                 left: 18px;
             }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -323,17 +470,23 @@
                 <h1>Praveen B</h1>
                 <p>DevOps Engineer</p>
                 <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>mosespraveen96@gmail.com</span>
+                    <div class="contact-item" onclick="location.href='mailto:mosespraveen96@gmail.com'">
+                        <a href="mailto:mosespraveen96@gmail.com">
+                            <i class="fas fa-envelope"></i>
+                            <span>mosespraveen96@gmail.com</span>
+                        </a>
                     </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <span>+91-9176281505</span>
+                    <div class="contact-item" onclick="location.href='tel:+919176281505'">
+                        <a href="tel:+919176281505">
+                            <i class="fas fa-phone"></i>
+                            <span>+91-9176281505</span>
+                        </a>
                     </div>
-                    <div class="contact-item">
-                        <i class="fab fa-linkedin"></i>
-                        <span>linkedin.com/in/praveen-bhuvaneswaran</span>
+                    <div class="contact-item" onclick="window.open('https://linkedin.com/in/praveen-bhuvaneswaran', '_blank')">
+                        <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank">
+                            <i class="fab fa-linkedin"></i>
+                            <span>LinkedIn Profile</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -343,8 +496,10 @@
     <!-- About Section -->
     <section id="about">
         <div class="container">
-            <h2 class="section-title">Professional Summary</h2>
-            <div class="about-content">
+            <div class="section-title">
+                <h2>Professional Summary</h2>
+            </div>
+            <div class="about-content fade-in">
                 <p>
                     DevOps Engineer with 5+ years of IT experience (2 years in DevOps, 3 years in Cloud Support). 
                     Proven expertise in AWS, EKS, Kubernetes, Docker, Jenkins, Terraform, Ansible, Helm, ArgoCD (GitOps) 
@@ -359,30 +514,32 @@
     <!-- Skills Section -->
     <section id="skills">
         <div class="container">
-            <h2 class="section-title">Technical Skills</h2>
+            <div class="section-title">
+                <h2>Technical Skills</h2>
+            </div>
             <div class="skills-grid">
-                <div class="skill-card">
+                <div class="skill-card fade-in">
                     <div class="skill-icon">
                         <i class="fab fa-jenkins"></i>
                     </div>
                     <h3>CI/CD & Automation</h3>
                     <p>Jenkins, Maven, Git, GitHub, ArgoCD (GitOps), Ansible, Terraform</p>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card fade-in">
                     <div class="skill-icon">
                         <i class="fab fa-docker"></i>
                     </div>
                     <h3>Containerization</h3>
                     <p>Docker, Kubernetes (EKS), Helm, Pod scheduling, HPA-based scaling</p>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card fade-in">
                     <div class="skill-icon">
                         <i class="fab fa-aws"></i>
                     </div>
                     <h3>Cloud & Infrastructure</h3>
                     <p>AWS (EC2, S3, VPC, IAM, RDS, CloudWatch, SNS, CloudTrail)</p>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card fade-in">
                     <div class="skill-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
@@ -396,9 +553,11 @@
     <!-- Experience Section -->
     <section id="experience">
         <div class="container">
-            <h2 class="section-title">Work Experience</h2>
+            <div class="section-title">
+                <h2>Work Experience</h2>
+            </div>
             <div class="timeline">
-                <div class="timeline-item">
+                <div class="timeline-item fade-in">
                     <div class="timeline-content">
                         <h3>DevOps Engineer</h3>
                         <div class="date">Oct 2023 – Present</div>
@@ -412,7 +571,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="timeline-item">
+                <div class="timeline-item fade-in">
                     <div class="timeline-content">
                         <h3>Cloud Support Engineer – Infrastructure Operations</h3>
                         <div class="date">Jan 2022 – Aug 2023</div>
@@ -425,7 +584,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="timeline-item">
+                <div class="timeline-item fade-in">
                     <div class="timeline-content">
                         <h3>Cloud Support Engineer – Monitoring Operations</h3>
                         <div class="date">Feb 2020 – Dec 2021</div>
@@ -445,9 +604,11 @@
     <!-- Certifications Section -->
     <section id="certifications">
         <div class="container">
-            <h2 class="section-title">Certifications</h2>
+            <div class="section-title">
+                <h2>Certifications</h2>
+            </div>
             <div class="certifications">
-                <div class="cert-card">
+                <div class="cert-card fade-in">
                     <h3>Japanese-Language Proficiency Test</h3>
                     <p>Certificate in Q4</p>
                 </div>
@@ -458,8 +619,10 @@
     <!-- Education Section -->
     <section id="education">
         <div class="container">
-            <h2 class="section-title">Education</h2>
-            <div class="about-content">
+            <div class="section-title">
+                <h2>Education</h2>
+            </div>
+            <div class="about-content fade-in">
                 <p>
                     <strong>Bachelor of Engineering (B.E) in Electrical and Electronics</strong><br>
                     Madha Engineering College
@@ -473,42 +636,60 @@
         <div class="container">
             <p>&copy; 2023 Praveen B. All Rights Reserved.</p>
             <div class="social-links">
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="mailto:mosespraveen96@gmail.com" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/MytPraveen" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="tel:+919176281505" title="Phone">
+                    <i class="fas fa-phone"></i>
+                </a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Simple animation for skill cards on scroll
+        // Scroll animation
         document.addEventListener('DOMContentLoaded', function() {
-            const skillCards = document.querySelectorAll('.skill-card');
-            const timelineItems = document.querySelectorAll('.timeline-content');
+            const fadeElements = document.querySelectorAll('.fade-in');
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.style.opacity = 1;
-                        entry.target.style.transform = 'translateY(0)';
+                        entry.target.classList.add('visible');
                     }
                 });
             }, { threshold: 0.1 });
             
-            skillCards.forEach(card => {
-                card.style.opacity = 0;
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(card);
+            fadeElements.forEach(element => {
+                observer.observe(element);
             });
-            
-            timelineItems.forEach(item => {
-                item.style.opacity = 0;
-                item.style.transform = 'translateX(-20px)';
-                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(item);
+
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+
+        // Add click effects to contact items
+        document.querySelectorAll('.contact-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
         });
     </script>
 </body>
 </html>
+EOF
