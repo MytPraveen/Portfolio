@@ -25,6 +25,10 @@
             --text-light: #f8fafc;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background: linear-gradient(135deg, var(--background), #1e3a8a);
             color: var(--text-light);
@@ -42,7 +46,7 @@
         header {
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: white;
-            padding: 80px 0 60px;
+            padding: 60px 0 40px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -60,20 +64,20 @@
         }
 
         .profile-img {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            margin: 0 auto 20px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            margin: 0 auto 15px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
+            font-size: 50px;
             color: white;
             position: relative;
             z-index: 2;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .header-content {
@@ -82,8 +86,8 @@
         }
 
         .header-content h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
             background: linear-gradient(45deg, #fff, #e0f7fa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -91,8 +95,8 @@
         }
 
         .header-content p {
-            font-size: 1.4rem;
-            margin-bottom: 30px;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
             opacity: 0.9;
         }
 
@@ -100,15 +104,15 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 25px;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 15px;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
+            gap: 8px;
+            padding: 10px 16px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             backdrop-filter: blur(10px);
@@ -119,8 +123,8 @@
 
         .contact-item:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .contact-item a {
@@ -128,26 +132,34 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .contact-item i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         /* Section Styles */
         section {
-            padding: 80px 0;
+            padding: 40px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             position: relative;
         }
 
         .section-title h2 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -157,10 +169,10 @@
         .section-title::after {
             content: '';
             display: block;
-            width: 100px;
-            height: 4px;
+            width: 80px;
+            height: 3px;
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
-            margin: 15px auto;
+            margin: 10px auto;
             border-radius: 2px;
         }
 
@@ -168,12 +180,12 @@
         .about-content {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 15px;
             max-width: 900px;
             margin: 0 auto;
             text-align: center;
-            font-size: 1.1rem;
-            line-height: 1.8;
+            font-size: 1rem;
+            line-height: 1.7;
         }
 
         .highlight {
@@ -186,20 +198,27 @@
         /* Skills Section */
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
 
         .skill-card {
             background: var(--card-bg);
-            border-radius: 15px;
-            padding: 40px 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 30px 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .skill-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .skill-card::before {
@@ -208,32 +227,33 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
         }
 
         .skill-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
         .skill-icon {
-            font-size: 50px;
-            margin-bottom: 20px;
+            font-size: 40px;
+            margin-bottom: 15px;
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .skill-card h3 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--text-light);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
         }
 
         .skill-card p {
             color: #cbd5e1;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: 0.9rem;
         }
 
         /* Experience Section */
@@ -246,20 +266,28 @@
         .timeline::after {
             content: '';
             position: absolute;
-            width: 6px;
+            width: 4px;
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
             top: 0;
             bottom: 0;
             left: 50%;
-            margin-left: -3px;
-            border-radius: 3px;
+            margin-left: -2px;
+            border-radius: 2px;
         }
 
         .timeline-item {
-            padding: 20px 40px;
+            padding: 15px 30px;
             position: relative;
             width: 50%;
             box-sizing: border-box;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .timeline-item:nth-child(odd) {
@@ -268,21 +296,26 @@
 
         .timeline-item:nth-child(even) {
             left: 50%;
+            transform: translateX(50px);
+        }
+
+        .timeline-item:nth-child(even).visible {
+            transform: translateX(0);
         }
 
         .timeline-content {
-            padding: 30px;
+            padding: 25px;
             background: var(--card-bg);
             position: relative;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .timeline-content h3 {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--text-light);
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
 
         .timeline-content .date {
@@ -290,74 +323,84 @@
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            font-size: 1rem;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
         .timeline-content .company {
             color: #94a3b8;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-style: italic;
+            font-size: 0.9rem;
         }
 
         .timeline-content ul {
-            padding-left: 20px;
+            padding-left: 18px;
         }
 
         .timeline-content li {
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             color: #cbd5e1;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: 0.9rem;
         }
 
         .timeline-item::after {
             content: '';
             position: absolute;
-            width: 25px;
-            height: 25px;
-            right: -13px;
+            width: 20px;
+            height: 20px;
+            right: -10px;
             background: var(--card-bg);
-            border: 4px solid #3b82f6;
-            top: 30px;
+            border: 3px solid #3b82f6;
+            top: 25px;
             border-radius: 50%;
             z-index: 1;
         }
 
         .timeline-item:nth-child(even)::after {
-            left: -12px;
+            left: -10px;
         }
 
-        /* Certifications Section */
-        .certifications {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 30px;
+        /* Certifications & Education Section */
+        .cert-edu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .cert-card {
+        .cert-edu-card {
             background: var(--card-bg);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 300px;
-            text-align: center;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        .cert-card:hover {
+        .cert-edu-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cert-edu-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
 
-        .cert-card h3 {
+        .cert-edu-card h3 {
             color: var(--text-light);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
         }
 
-        .cert-card p {
+        .cert-edu-card p {
             color: #94a3b8;
+            line-height: 1.5;
         }
 
         /* Footer */
@@ -365,26 +408,27 @@
             background: linear-gradient(135deg, #1e293b, #0f172a);
             color: white;
             text-align: center;
-            padding: 40px 0;
+            padding: 30px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
         }
 
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            margin-top: 20px;
+            gap: 20px;
+            margin-top: 15px;
         }
 
         .social-links a {
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             transition: all 0.3s ease;
-            padding: 12px;
+            padding: 10px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -392,25 +436,25 @@
 
         .social-links a:hover {
             background: linear-gradient(45deg, #3b82f6, #60a5fa);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-content h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
             
             .contact-info {
                 flex-direction: column;
                 align-items: center;
-                gap: 15px;
+                gap: 10px;
             }
             
             .contact-item {
                 width: 100%;
-                max-width: 300px;
+                max-width: 280px;
                 justify-content: center;
             }
             
@@ -424,8 +468,8 @@
             
             .timeline-item {
                 width: 100%;
-                padding-left: 70px;
-                padding-right: 25px;
+                padding-left: 60px;
+                padding-right: 20px;
             }
             
             .timeline-item:nth-child(even) {
@@ -441,20 +485,12 @@
             }
 
             .section-title h2 {
-                font-size: 2rem;
+                font-size: 1.7rem;
             }
-        }
 
-        /* Animation classes */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
+            .cert-edu-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -498,7 +534,7 @@
             <div class="section-title">
                 <h2>Professional Summary</h2>
             </div>
-            <div class="about-content fade-in">
+            <div class="about-content">
                 <p>
                     DevOps Engineer with 5+ years of IT experience (2 years in DevOps, 3 years in Cloud Support). 
                     Proven expertise in AWS, EKS, Kubernetes, Docker, Jenkins, Terraform, Ansible, Helm, ArgoCD (GitOps) 
@@ -517,28 +553,28 @@
                 <h2>Technical Skills</h2>
             </div>
             <div class="skills-grid">
-                <div class="skill-card fade-in">
+                <div class="skill-card">
                     <div class="skill-icon">
                         <i class="fab fa-jenkins"></i>
                     </div>
                     <h3>CI/CD & Automation</h3>
                     <p>Jenkins, Maven, Git, GitHub, ArgoCD (GitOps), Ansible, Terraform</p>
                 </div>
-                <div class="skill-card fade-in">
+                <div class="skill-card">
                     <div class="skill-icon">
                         <i class="fab fa-docker"></i>
                     </div>
                     <h3>Containerization</h3>
                     <p>Docker, Kubernetes (EKS), Helm, Pod scheduling, HPA-based scaling</p>
                 </div>
-                <div class="skill-card fade-in">
+                <div class="skill-card">
                     <div class="skill-icon">
                         <i class="fab fa-aws"></i>
                     </div>
                     <h3>Cloud & Infrastructure</h3>
                     <p>AWS (EC2, S3, VPC, IAM, RDS, CloudWatch, SNS, CloudTrail)</p>
                 </div>
-                <div class="skill-card fade-in">
+                <div class="skill-card">
                     <div class="skill-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
@@ -556,7 +592,7 @@
                 <h2>Work Experience</h2>
             </div>
             <div class="timeline">
-                <div class="timeline-item fade-in">
+                <div class="timeline-item">
                     <div class="timeline-content">
                         <h3>DevOps Engineer</h3>
                         <div class="date">Oct 2023 – Present</div>
@@ -570,7 +606,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="timeline-item fade-in">
+                <div class="timeline-item">
                     <div class="timeline-content">
                         <h3>Cloud Support Engineer – Infrastructure Operations</h3>
                         <div class="date">Jan 2022 – Aug 2023</div>
@@ -583,7 +619,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="timeline-item fade-in">
+                <div class="timeline-item">
                     <div class="timeline-content">
                         <h3>Cloud Support Engineer – Monitoring Operations</h3>
                         <div class="date">Feb 2020 – Dec 2021</div>
@@ -600,32 +636,18 @@
         </div>
     </section>
 
-    <!-- Certifications Section -->
-    <section id="certifications">
+    <!-- Certifications & Education Section -->
+    <section id="certifications-education">
         <div class="container">
-            <div class="section-title">
-                <h2>Certifications</h2>
-            </div>
-            <div class="certifications">
-                <div class="cert-card fade-in">
-                    <h3>Japanese-Language Proficiency Test</h3>
-                    <p>Certificate in Q4</p>
+            <div class="cert-edu-grid">
+                <div class="cert-edu-card">
+                    <h3>Certifications</h3>
+                    <p><strong>Japanese-Language Proficiency Test</strong><br>Certificate in Q4</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Education Section -->
-    <section id="education">
-        <div class="container">
-            <div class="section-title">
-                <h2>Education</h2>
-            </div>
-            <div class="about-content fade-in">
-                <p>
-                    <strong>Bachelor of Engineering (B.E) in Electrical and Electronics</strong><br>
-                    Madha Engineering College
-                </p>
+                <div class="cert-edu-card">
+                    <h3>Education</h3>
+                    <p><strong>Bachelor of Engineering (B.E) in Electrical and Electronics</strong><br>Madha Engineering College</p>
+                </div>
             </div>
         </div>
     </section>
@@ -652,9 +674,12 @@
     </footer>
 
     <script>
-        // Scroll animation
+        // Enhanced scroll animations
         document.addEventListener('DOMContentLoaded', function() {
-            const fadeElements = document.querySelectorAll('.fade-in');
+            const sections = document.querySelectorAll('section');
+            const skillCards = document.querySelectorAll('.skill-card');
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const certEduCards = document.querySelectorAll('.cert-edu-card');
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -662,19 +687,46 @@
                         entry.target.classList.add('visible');
                     }
                 });
-            }, { threshold: 0.1 });
+            }, { 
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
             
-            fadeElements.forEach(element => {
-                observer.observe(element);
+            // Observe sections
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Observe skill cards with delay
+            skillCards.forEach((card, index) => {
+                setTimeout(() => {
+                    observer.observe(card);
+                }, index * 100);
+            });
+            
+            // Observe timeline items with delay
+            timelineItems.forEach((item, index) => {
+                setTimeout(() => {
+                    observer.observe(item);
+                }, index * 150);
+            });
+            
+            // Observe certification and education cards
+            certEduCards.forEach(card => {
+                observer.observe(card);
             });
 
             // Smooth scrolling for navigation
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 });
             });
         });
@@ -687,6 +739,13 @@
                     this.style.transform = '';
                 }, 150);
             });
+        });
+
+        // Parallax effect for header
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const header = document.querySelector('header');
+            header.style.transform = `translateY(${scrolled * 0.5}px)`;
         });
     </script>
 </body>
