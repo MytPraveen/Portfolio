@@ -325,6 +325,39 @@
             color: var(--terminal-cyan);
         }
 
+        /* Resume Download Button */
+        .resume-download {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .resume-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, var(--terminal-purple), var(--terminal-pink));
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);
+            border: 2px solid transparent;
+        }
+
+        .resume-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(157, 78, 221, 0.6);
+            background: linear-gradient(45deg, var(--terminal-pink), var(--terminal-purple));
+        }
+
+        .resume-btn i {
+            font-size: 1.2rem;
+        }
+
         /* Skills Section */
         .skills-grid {
             display: grid;
@@ -609,6 +642,11 @@
             .timeline-item::before {
                 left: -35px;
             }
+
+            .resume-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
         }
 
         /* Scroll Animations */
@@ -684,6 +722,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Resume Download Section -->
+                <div class="resume-download fade-in">
+                    <a href="resume.pdf" class="resume-btn" download="Praveen_B_DevOps_Resume.pdf">
+                        <i class="fas fa-download"></i>
+                        Download My Resume (PDF)
+                    </a>
                 </div>
 
                 <!-- About Section -->
@@ -911,7 +957,7 @@
         });
 
         // Add click effects
-        document.querySelectorAll('.contact-item, .social-link').forEach(item => {
+        document.querySelectorAll('.contact-item, .social-link, .resume-btn').forEach(item => {
             item.addEventListener('click', function() {
                 this.style.transform = 'scale(0.95)';
                 setTimeout(() => {
