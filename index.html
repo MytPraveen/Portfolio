@@ -38,6 +38,7 @@
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         /* Animated Background */
@@ -69,13 +70,107 @@
             padding: 0 20px;
         }
 
-        /* Terminal Header */
+        /* ========== NAVIGATION BAR - FIXED ========== */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--terminal-purple);
+            box-shadow: 0 4px 30px rgba(157, 78, 221, 0.3);
+            padding: 10px 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-logo {
+            color: var(--terminal-green);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 0 15px var(--terminal-green);
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: var(--terminal-text);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--terminal-green);
+            text-shadow: 0 0 10px var(--terminal-green);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--terminal-green);
+        }
+
+        .nav-link.active {
+            color: var(--terminal-green);
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--terminal-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            color: var(--terminal-text);
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+        }
+
+        /* Terminal Header - Adjusted for nav */
         .terminal-header {
             background: rgba(26, 26, 46, 0.95);
             backdrop-filter: blur(10px);
             padding: 15px 0;
             border-bottom: 2px solid var(--terminal-purple);
             box-shadow: 0 4px 30px rgba(157, 78, 221, 0.2);
+            margin-top: 80px; /* Added space for fixed nav */
         }
 
         .terminal-window-controls {
@@ -614,6 +709,34 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                flex-direction: column;
+                background: rgba(10, 10, 15, 0.98);
+                backdrop-filter: blur(20px);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.2);
+                padding: 20px 0;
+                border-top: 2px solid var(--terminal-purple);
+                gap: 0;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .nav-item {
+                margin: 15px 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
             .profile-header {
                 flex-direction: column;
                 text-align: center;
@@ -660,9 +783,41 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Section IDs for navigation */
+        section {
+            scroll-margin-top: 100px;
+        }
     </style>
 </head>
 <body>
+    <!-- ========== NAVIGATION BAR - VISIBLE ========== -->
+    <div class="nav-container">
+        <nav class="navbar">
+            <a href="#home" class="nav-logo">PraveenB</a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link active">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#skills" class="nav-link">Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#experience" class="nav-link">Experience</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <button class="hamburger">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </div>
+
     <!-- Animated Background -->
     <div class="bg-particles" id="particles"></div>
 
@@ -689,282 +844,173 @@
 
             <!-- Terminal Output -->
             <div class="output">
-                <!-- Profile Section -->
-                <div class="comment">// === PRAVEEN B - DEVOPS ENGINEER ===</div>
-                
-                <div class="profile-section fade-in">
-                    <div class="profile-header">
-                        <div class="profile-icon">
-                            <i class="fas fa-terminal"></i>
-                        </div>
-                        <div class="profile-info">
-                            <h1>Praveen B</h1>
-                            <div class="title">DevOps Engineer</div>
-                            <div class="contact-info">
-                                <div class="contact-item" onclick="location.href='mailto:mosespraveen96@gmail.com'">
-                                    <a href="mailto:mosespraveen96@gmail.com">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>mosespraveen96@gmail.com</span>
-                                    </a>
-                                </div>
-                                <div class="contact-item" onclick="location.href='tel:+919176281505'">
-                                    <a href="tel:+919176281505">
-                                        <i class="fas fa-phone"></i>
-                                        <span>+91-9176281505</span>
-                                    </a>
-                                </div>
-                                <div class="contact-item" onclick="window.open('https://linkedin.com/in/praveen-bhuvaneswaran', '_blank')">
-                                    <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank">
-                                        <i class="fab fa-linkedin"></i>
-                                        <span>LinkedIn</span>
-                                    </a>
+                <!-- Home Section -->
+                <section id="home">
+                    <div class="comment">// === PRAVEEN B - DEVOPS ENGINEER ===</div>
+                    
+                    <div class="profile-section fade-in">
+                        <div class="profile-header">
+                            <div class="profile-icon">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                            <div class="profile-info">
+                                <h1>Praveen B</h1>
+                                <div class="title">DevOps Engineer</div>
+                                <div class="contact-info">
+                                    <div class="contact-item" onclick="location.href='mailto:mosespraveen96@gmail.com'">
+                                        <a href="mailto:mosespraveen96@gmail.com">
+                                            <i class="fas fa-envelope"></i>
+                                            <span>mosespraveen96@gmail.com</span>
+                                        </a>
+                                    </div>
+                                    <div class="contact-item" onclick="location.href='tel:+919176281505'">
+                                        <a href="tel:+919176281505">
+                                            <i class="fas fa-phone"></i>
+                                            <span>+91-9176281505</span>
+                                        </a>
+                                    </div>
+                                    <div class="contact-item" onclick="window.open('https://linkedin.com/in/praveen-bhuvaneswaran', '_blank')">
+                                        <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank">
+                                            <i class="fab fa-linkedin"></i>
+                                            <span>LinkedIn</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Resume Download Section -->
-                <div class="resume-download fade-in">
-                    <a href="resume.pdf" class="resume-btn" download="Praveen_B_DevOps_Resume.pdf">
-                        <i class="fas fa-download"></i>
-                        Download My Resume (PDF)
-                    </a>
-                </div>
+                    <!-- Resume Download Section -->
+                    <div class="resume-download fade-in">
+                        <a href="resume.pdf" class="resume-btn" download="Praveen_B_DevOps_Resume.pdf">
+                            <i class="fas fa-download"></i>
+                            Download My Resume (PDF)
+                        </a>
+                    </div>
+                </section>
 
                 <!-- About Section -->
-                <div class="comment">// === PROFESSIONAL SUMMARY ===</div>
-                <div class="profile-section fade-in">
-                    <p><span class="keyword">const</span> <span class="variable">professionalSummary</span> = <span class="string">"DevOps Engineer with 5+ years of IT experience (2 years in DevOps, 3 years in Cloud Support). Proven expertise in AWS, EKS, Kubernetes, Docker, Jenkins, Terraform, Ansible, Helm, ArgoCD (GitOps) and monitoring solutions (Prometheus, Grafana). Skilled in designing scalable cloud architectures, automating deployments, and implementing secure CI/CD and GitOps pipelines."</span>;</p>
-                </div>
+                <section id="about">
+                    <div class="comment">// === PROFESSIONAL SUMMARY ===</div>
+                    <div class="profile-section fade-in">
+                        <p><span class="keyword">const</span> <span class="variable">professionalSummary</span> = <span class="string">"DevOps Engineer with 5+ years of IT experience (2 years in DevOps, 3 years in Cloud Support). Proven expertise in AWS, EKS, Kubernetes, Docker, Jenkins, Terraform, Ansible, Helm, ArgoCD (GitOps) and monitoring solutions (Prometheus, Grafana). Skilled in designing scalable cloud architectures, automating deployments, and implementing secure CI/CD and GitOps pipelines."</span>;</p>
+                    </div>
+                </section>
 
                 <!-- Skills Section -->
-                <div class="comment">// === TECHNICAL SKILLS ===</div>
-                <div class="skills-grid">
-                    <div class="skill-category fade-in">
-                        <div class="skill-header">
-                            <i class="fab fa-jenkins skill-icon"></i>
-                            <h3>CI/CD & Automation</h3>
+                <section id="skills">
+                    <div class="comment">// === TECHNICAL SKILLS ===</div>
+                    <div class="skills-grid">
+                        <div class="skill-category fade-in">
+                            <div class="skill-header">
+                                <i class="fab fa-jenkins skill-icon"></i>
+                                <h3>CI/CD & Automation</h3>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Jenkins</span>
+                                <span class="skill-tag">Maven</span>
+                                <span class="skill-tag">Git</span>
+                                <span class="skill-tag">GitHub</span>
+                                <span class="skill-tag">ArgoCD</span>
+                                <span class="skill-tag">Ansible</span>
+                                <span class="skill-tag">Terraform</span>
+                            </div>
                         </div>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Jenkins</span>
-                            <span class="skill-tag">Maven</span>
-                            <span class="skill-tag">Git</span>
-                            <span class="skill-tag">GitHub</span>
-                            <span class="skill-tag">ArgoCD</span>
-                            <span class="skill-tag">Ansible</span>
-                            <span class="skill-tag">Terraform</span>
-                        </div>
-                    </div>
 
-                    <div class="skill-category fade-in">
-                        <div class="skill-header">
-                            <i class="fab fa-docker skill-icon"></i>
-                            <h3>Containerization</h3>
+                        <div class="skill-category fade-in">
+                            <div class="skill-header">
+                                <i class="fab fa-docker skill-icon"></i>
+                                <h3>Containerization</h3>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Docker</span>
+                                <span class="skill-tag">Kubernetes</span>
+                                <span class="skill-tag">EKS</span>
+                                <span class="skill-tag">Helm</span>
+                                <span class="skill-tag">Pod Scheduling</span>
+                                <span class="skill-tag">HPA</span>
+                            </div>
                         </div>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Docker</span>
-                            <span class="skill-tag">Kubernetes</span>
-                            <span class="skill-tag">EKS</span>
-                            <span class="skill-tag">Helm</span>
-                            <span class="skill-tag">Pod Scheduling</span>
-                            <span class="skill-tag">HPA</span>
-                        </div>
-                    </div>
 
-                    <div class="skill-category fade-in">
-                        <div class="skill-header">
-                            <i class="fab fa-aws skill-icon"></i>
-                            <h3>Cloud & Infrastructure</h3>
+                        <div class="skill-category fade-in">
+                            <div class="skill-header">
+                                <i class="fab fa-aws skill-icon"></i>
+                                <h3>Cloud & Infrastructure</h3>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">EC2</span>
+                                <span class="skill-tag">S3</span>
+                                <span class="skill-tag">VPC</span>
+                                <span class="skill-tag">IAM</span>
+                                <span class="skill-tag">RDS</span>
+                                <span class="skill-tag">CloudWatch</span>
+                                <span class="skill-tag">SNS</span>
+                                <span class="skill-tag">CloudTrail</span>
+                            </div>
                         </div>
-                        <div class="skill-tags">
-                            <span class="skill-tag">EC2</span>
-                            <span class="skill-tag">S3</span>
-                            <span class="skill-tag">VPC</span>
-                            <span class="skill-tag">IAM</span>
-                            <span class="skill-tag">RDS</span>
-                            <span class="skill-tag">CloudWatch</span>
-                            <span class="skill-tag">SNS</span>
-                            <span class="skill-tag">CloudTrail</span>
-                        </div>
-                    </div>
 
-                    <div class="skill-category fade-in">
-                        <div class="skill-header">
-                            <i class="fas fa-shield-alt skill-icon"></i>
-                            <h3>Monitoring & Security</h3>
-                        </div>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Prometheus</span>
-                            <span class="skill-tag">Grafana</span>
-                            <span class="skill-tag">OWASP</span>
-                            <span class="skill-tag">TRIVY</span>
-                            <span class="skill-tag">ZAP</span>
+                        <div class="skill-category fade-in">
+                            <div class="skill-header">
+                                <i class="fas fa-shield-alt skill-icon"></i>
+                                <h3>Monitoring & Security</h3>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Prometheus</span>
+                                <span class="skill-tag">Grafana</span>
+                                <span class="skill-tag">OWASP</span>
+                                <span class="skill-tag">TRIVY</span>
+                                <span class="skill-tag">ZAP</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
                 <!-- Experience Section -->
-                <div class="comment">// === WORK EXPERIENCE ===</div>
-                <div class="timeline">
-                    <div class="timeline-item fade-in">
-                        <div class="job-title">DevOps Engineer</div>
-                        <div class="company">Fujitsu Consulting India Pvt Ltd</div>
-                        <div class="date">Oct 2023 – Present</div>
-                        <ul class="job-description">
-                            <li>Built and maintained CI/CD pipelines using Jenkins</li>
-                            <li>Managed production-grade Kubernetes clusters on AWS EKS</li>
-                            <li>Implemented GitOps with ArgoCD for declarative deployments</li>
-                            <li>Packaged and deployed services using Helm charts</li>
-                            <li>Set up Prometheus and Grafana dashboards for monitoring</li>
-                        </ul>
+                <section id="experience">
+                    <div class="comment">// === WORK EXPERIENCE ===</div>
+                    <div class="timeline">
+                        <div class="timeline-item fade-in">
+                            <div class="job-title">DevOps Engineer</div>
+                            <div class="company">Fujitsu Consulting India Pvt Ltd</div>
+                            <div class="date">Oct 2023 – Present</div>
+                            <ul class="job-description">
+                                <li>Built and maintained CI/CD pipelines using Jenkins</li>
+                                <li>Managed production-grade Kubernetes clusters on AWS EKS</li>
+                                <li>Implemented GitOps with ArgoCD for declarative deployments</li>
+                                <li>Packaged and deployed services using Helm charts</li>
+                                <li>Set up Prometheus and Grafana dashboards for monitoring</li>
+                            </ul>
+                        </div>
+
+                        <div class="timeline-item fade-in">
+                            <div class="job-title">Cloud Support Engineer – Infrastructure Operations</div>
+                            <div class="company">Fujitsu Consulting India Pvt Ltd</div>
+                            <div class="date">Jan 2022 – Aug 2023</div>
+                            <ul class="job-description">
+                                <li>Managed AWS cloud resources and Linux administration</li>
+                                <li>Optimized routing and configured VRF routing, interfaces, and BGP</li>
+                                <li>Performed planned Windows server reboots</li>
+                                <li>Prepared monthly Incident, Problem, and Change Management reports</li>
+                            </ul>
+                        </div>
+
+                        <div class="timeline-item fade-in">
+                            <div class="job-title">Cloud Support Engineer – Monitoring Operations</div>
+                            <div class="company">Fujitsu Consulting India Pvt Ltd</div>
+                            <div class="date">Feb 2020 – Dec 2021</div>
+                            <ul class="job-description">
+                                <li>Provided 24/7 monitoring for global infrastructure</li>
+                                <li>Responded to health/backup/availability alerts per SLA</li>
+                                <li>Communicated with Japanese Level-2 teams</li>
+                                <li>Maintained alert/ticket hygiene in ServiceNow</li>
+                            </ul>
+                        </div>
                     </div>
+                </section>
 
-                    <div class="timeline-item fade-in">
-                        <div class="job-title">Cloud Support Engineer – Infrastructure Operations</div>
-                        <div class="company">Fujitsu Consulting India Pvt Ltd</div>
-                        <div class="date">Jan 2022 – Aug 2023</div>
-                        <ul class="job-description">
-                            <li>Managed AWS cloud resources and Linux administration</li>
-                            <li>Optimized routing and configured VRF routing, interfaces, and BGP</li>
-                            <li>Performed planned Windows server reboots</li>
-                            <li>Prepared monthly Incident, Problem, and Change Management reports</li>
-                        </ul>
-                    </div>
-
-                    <div class="timeline-item fade-in">
-                        <div class="job-title">Cloud Support Engineer – Monitoring Operations</div>
-                        <div class="company">Fujitsu Consulting India Pvt Ltd</div>
-                        <div class="date">Feb 2020 – Dec 2021</div>
-                        <ul class="job-description">
-                            <li>Provided 24/7 monitoring for global infrastructure</li>
-                            <li>Responded to health/backup/availability alerts per SLA</li>
-                            <li>Communicated with Japanese Level-2 teams</li>
-                            <li>Maintained alert/ticket hygiene in ServiceNow</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Certifications & Education -->
-                <div class="info-cards">
-                    <div class="info-card fade-in">
-                        <h3>// CERTIFICATIONS</h3>
-                        <p><strong>Japanese-Language Proficiency Test</strong><br>
-                        Certificate in Q4</p>
-                    </div>
-
-                    <div class="info-card fade-in">
-                        <h3>// EDUCATION</h3>
-                        <p><strong>Bachelor of Engineering (B.E) in Electrical and Electronics</strong><br>
-                        Madha Engineering College</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="terminal-footer">
-        <div class="container">
-            <div style="text-align: center; color: var(--terminal-cyan);">
-                <span style="text-shadow: 0 0 10px var(--terminal-cyan);">// © 2023 Praveen B. All rights reserved.</span>
-            </div>
-            <div class="social-links">
-                <a href="mailto:mosespraveen96@gmail.com" class="social-link" title="Email">
-                    <i class="fas fa-envelope"></i>
-                </a>
-                <a href="https://linkedin.com/in/praveen-bhuvaneswaran" class="social-link" target="_blank" title="LinkedIn">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="https://github.com/MytPraveen" class="social-link" target="_blank" title="GitHub">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="tel:+919176281505" class="social-link" title="Phone">
-                    <i class="fas fa-phone"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Create animated background particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = 15;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random properties
-                const size = Math.random() * 6 + 2;
-                const left = Math.random() * 100;
-                const top = Math.random() * 100;
-                const delay = Math.random() * 5;
-                const duration = Math.random() * 4 + 3;
-                
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${left}%`;
-                particle.style.top = `${top}%`;
-                particle.style.animationDelay = `${delay}s`;
-                particle.style.animationDuration = `${duration}s`;
-                
-                // Random color from terminal palette
-                const colors = [
-                    'var(--terminal-cyan)', 'var(--terminal-blue)', 'var(--terminal-purple)',
-                    'var(--terminal-green)', 'var(--terminal-pink)'
-                ];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
-                container.appendChild(particle);
-            }
-        }
-
-        // Scroll animations
-        document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            
-            const fadeElements = document.querySelectorAll('.fade-in');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            fadeElements.forEach(element => {
-                observer.observe(element);
-            });
-
-            // Typewriter effect for command line
-            const command = document.querySelector('.command');
-            const text = "cat praveen_profile.txt";
-            let index = 0;
-
-            function typeWriter() {
-                if (index < text.length) {
-                    command.textContent += text.charAt(index);
-                    index++;
-                    setTimeout(typeWriter, 100);
-                }
-            }
-
-            // Start typing after a short delay
-            setTimeout(typeWriter, 1000);
-        });
-
-        // Add click effects
-        document.querySelectorAll('.contact-item, .social-link, .resume-btn').forEach(item => {
-            item.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            });
-        });
-    </script>
-</body>
-</html>
+                <!-- Contact Section -->
+                <section id="contact">
+                    <div class="comment">// === CONTACT INFORMATION ===</div>
+                    <div class="profile-section fade-in">
+                        <div class="contact-info">
+                            <div
