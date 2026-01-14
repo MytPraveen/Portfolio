@@ -1,351 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Praveen B | DevOps Engineer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praveen B | DevOps Engineer</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
 
-        :root {
-            --primary:#2563eb;
-            --secondary:#7c3aed;
-            --accent:#06d6a0;
-            --dark:#0f172a;
-            --dark-light:#1e293b;
-            --text:#f8fafc;
-            --text-light:#cbd5e1;
-            --card-bg:rgba(30,41,59,0.85);
-            --shadow:0 10px 25px rgba(0,0,0,.3);
-            --gradient:linear-gradient(135deg,var(--primary),var(--secondary));
-        }
+:root{
+--bg:#020617;
+--card:#0f172a;
+--accent:#22d3ee;
+--accent2:#6366f1;
+--text:#e5e7eb;
+--muted:#94a3b8;
+--border:rgba(255,255,255,.08);
+--glow:0 0 25px rgba(34,211,238,.25);
+}
 
-        body {
-            background:linear-gradient(135deg,var(--dark),#1e1b4b);
-            color:var(--text);
-            line-height:1.6;
-        }
+body{
+background:radial-gradient(circle at top,#020617,#000);
+color:var(--text);
+line-height:1.7;
+scroll-behavior:smooth;
+}
 
-        /* NAVBAR */
-        .navbar {
-            position:fixed; top:0; width:100%;
-            background:rgba(15,23,42,.95);
-            backdrop-filter:blur(20px);
-            z-index:1000;
-            border-bottom:1px solid rgba(255,255,255,.1);
-        }
-        .nav-container {
-            max-width:1200px; margin:auto;
-            padding:1rem 2rem;
-            display:flex; justify-content:space-between; align-items:center;
-        }
-        .logo { font-size:1.5rem; font-weight:700; color:white; text-decoration:none; }
-        .logo span { color:var(--accent); }
-        .nav-links { list-style:none; display:flex; gap:1.5rem; }
-        .nav-links a {
-            color:var(--text-light);
-            text-decoration:none;
-            padding:.5rem 1rem;
-            border-radius:8px;
-        }
-        .nav-links a:hover,.nav-links a.active {
-            background:rgba(6,214,160,.1);
-            color:var(--accent);
-        }
-        .hamburger { display:none; background:none; border:none; color:white; font-size:1.5rem; }
+a{text-decoration:none;color:inherit}
 
-        /* LAYOUT */
-        .container { max-width:1200px; margin:auto; padding:6rem 2rem 2rem; }
-        section { margin-bottom:4rem; }
+/* NAV */
+nav{
+position:fixed;top:0;width:100%;
+background:rgba(2,6,23,.85);
+backdrop-filter:blur(14px);
+border-bottom:1px solid var(--border);
+z-index:999;
+}
+.nav{
+max-width:1200px;margin:auto;
+display:flex;justify-content:space-between;align-items:center;
+padding:1rem 2rem;
+}
+.logo{
+font-size:1.4rem;font-weight:700;
+}
+.logo span{color:var(--accent)}
+.nav ul{list-style:none;display:flex;gap:1.5rem}
+.nav ul a{
+color:var(--muted);
+padding:.4rem .8rem;border-radius:8px;
+}
+.nav ul a:hover,.nav ul a.active{
+color:var(--accent);
+background:rgba(34,211,238,.1);
+}
 
-        /* HERO */
-        .hero { text-align:center; padding:4rem 0; }
-        .profile-image {
-            width:140px; height:140px; border-radius:50%;
-            margin:0 auto 2rem;
-            background:var(--gradient);
-            display:flex; align-items:center; justify-content:center;
-            font-size:3rem;
-            box-shadow:var(--shadow);
-        }
-        .hero h1 {
-            font-size:3rem;
-            background:linear-gradient(135deg,var(--accent),var(--primary));
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-        }
-        .hero .title { font-size:1.4rem; color:var(--text-light); margin-bottom:1.5rem; }
+/* LAYOUT */
+.container{max-width:1200px;margin:auto;padding:7rem 2rem 3rem}
+section{margin-bottom:5rem;opacity:0;transform:translateY(40px)}
+section.show{opacity:1;transform:none;transition:.8s}
 
-        .btn {
-            padding:.75rem 2rem;
-            border-radius:8px;
-            text-decoration:none;
-            font-weight:600;
-            display:inline-flex; gap:.5rem; align-items:center;
-        }
-        .btn-primary { background:var(--gradient); color:white; }
-        .btn-secondary {
-            background:var(--card-bg);
-            border:1px solid rgba(255,255,255,.1);
-            color:white;
-        }
+/* HERO */
+.hero{text-align:center}
+.avatar{
+width:140px;height:140px;margin:auto;
+border-radius:50%;
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+display:flex;align-items:center;justify-content:center;
+font-size:3rem;box-shadow:var(--glow);
+}
+.hero h1{
+font-size:3rem;margin-top:1rem;
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+.hero p{max-width:620px;margin:1rem auto;color:var(--muted)}
+.cta{margin-top:2rem;display:flex;gap:1rem;justify-content:center}
+.btn{
+padding:.8rem 2rem;border-radius:10px;font-weight:600;
+border:1px solid var(--border);
+background:var(--card);
+}
+.btn.primary{
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+color:#000;border:none;
+}
 
-        /* SECTION HEADER */
-        .section-header { text-align:center; margin-bottom:2.5rem; }
-        .section-header h2 {
-            font-size:2.3rem;
-            background:linear-gradient(135deg,var(--accent),var(--primary));
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-        }
-        .section-header p { color:var(--text-light); }
+/* SECTION TITLE */
+.title{text-align:center;margin-bottom:2.5rem}
+.title h2{font-size:2.4rem}
+.title span{color:var(--accent)}
+.title p{color:var(--muted)}
 
-        /* CARD */
-        .card {
-            background:var(--card-bg);
-            padding:2.5rem;
-            border-radius:18px;
-            box-shadow:var(--shadow);
-            border:1px solid rgba(255,255,255,.1);
-        }
+/* CARD */
+.card{
+background:linear-gradient(180deg,#020617,#0f172a);
+border:1px solid var(--border);
+border-radius:18px;
+padding:2.5rem;
+transition:.3s;
+}
+.card:hover{transform:translateY(-6px);box-shadow:var(--glow)}
 
-        /* SKILLS */
-        .skills-grid {
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-            gap:2rem;
-        }
-        .skill-category h3 { margin-bottom:1rem; color:var(--accent); }
-        .skill-tags { display:flex; flex-wrap:wrap; gap:.5rem; }
-        .skill-tag {
-            background:rgba(255,255,255,.1);
-            padding:.4rem .9rem;
-            border-radius:20px;
-            font-size:.9rem;
-        }
+/* SKILLS */
+.skills{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:2rem;
+}
+.skill h3{color:var(--accent);margin-bottom:.8rem}
+.tags{display:flex;flex-wrap:wrap;gap:.6rem}
+.tag{
+background:rgba(255,255,255,.08);
+padding:.4rem .9rem;border-radius:20px;font-size:.9rem;
+}
+.tag:hover{background:var(--accent);color:#000}
 
-        /* TIMELINE */
-        .timeline { max-width:850px; margin:auto; position:relative; }
-        .timeline::before {
-            content:''; position:absolute; left:25px; top:0; bottom:0;
-            width:2px; background:var(--gradient);
-        }
-        .timeline-item {
-            margin-left:70px; margin-bottom:2rem;
-            background:var(--card-bg);
-            padding:2rem;
-            border-radius:15px;
-            border:1px solid rgba(255,255,255,.1);
-        }
-        .timeline-item::before {
-            content:''; position:absolute;
-            left:17px; width:18px; height:18px;
-            background:var(--accent); border-radius:50%;
-        }
-        .job-title { font-size:1.2rem; color:var(--accent); }
-        .company { color:var(--text-light); }
-        .date { color:var(--primary); margin-bottom:.8rem; }
+/* TIMELINE */
+.timeline{max-width:900px;margin:auto;border-left:2px solid var(--accent)}
+.job{padding-left:2rem;margin-bottom:2.5rem;position:relative}
+.job::before{
+content:"";position:absolute;left:-10px;top:6px;
+width:16px;height:16px;background:var(--accent);
+border-radius:50%;
+}
+.job h3{color:var(--accent)}
+.job span{color:var(--muted);font-size:.9rem}
 
-        .job-description { list-style:none; }
-        .job-description li::before { content:"▸ "; color:var(--accent); }
+/* HOMELAB */
+.homelab ul{margin-top:1rem}
+.homelab li{margin:.6rem 0}
 
-        /* FOOTER */
-        .footer { background:var(--dark-light); padding:2.5rem 0; text-align:center; }
-        .social-links { display:flex; justify-content:center; gap:1rem; margin:1.5rem 0; }
-        .social-link {
-            width:45px; height:45px;
-            display:flex; align-items:center; justify-content:center;
-            background:var(--card-bg);
-            border-radius:10px; color:white;
-        }
+/* FOOTER */
+footer{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.socials{display:flex;gap:1rem;justify-content:center;margin:1.5rem 0}
+.socials a{
+width:46px;height:46px;border-radius:12px;
+display:flex;align-items:center;justify-content:center;
+background:var(--card);border:1px solid var(--border);
+}
+.socials a:hover{background:var(--accent);color:#000}
 
-        @media(max-width:768px){
-            .nav-links { display:none; flex-direction:column; background:var(--dark); }
-            .nav-links.active { display:flex; }
-            .hamburger { display:block; }
-        }
-    </style>
+@media(max-width:768px){
+.hero h1{font-size:2.3rem}
+.nav ul{display:none}
+}
+</style>
 </head>
 
 <body>
 
-<nav class="navbar">
-    <div class="nav-container">
-        <a class="logo" href="#home">Praveen<span>B</span></a>
-        <ul class="nav-links">
-            <li><a href="#home" class="active">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Homelab</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <button class="hamburger"><i class="fas fa-bars"></i></button>
-    </div>
+<nav>
+<div class="nav">
+<div class="logo">Praveen<span>B</span></div>
+<ul>
+<li><a href="#home" class="active">Home</a></li>
+<li><a href="#about">About</a></li>
+<li><a href="#skills">Skills</a></li>
+<li><a href="#homelab">Homelab</a></li>
+<li><a href="#experience">Experience</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+</div>
 </nav>
 
 <div class="container">
 
-<!-- HERO -->
 <section id="home" class="hero">
-    <div class="profile-image"><i class="fas fa-code"></i></div>
-    <h1>Praveen B</h1>
-    <div class="title">DevOps Engineer</div>
-    <p style="max-width:600px;margin:auto;color:var(--text-light)">
-        DevOps Engineer with 6 years of IT experience, specializing in CI/CD, Kubernetes, AWS, and GitOps
-    </p>
+<div class="avatar"><i class="fas fa-code"></i></div>
+<h1>Praveen B</h1>
+<p>
+DevOps Engineer with <b>6 years of IT experience</b>, including
+<b>2.5 years in DevOps</b>, specializing in Kubernetes, AWS, CI/CD, and GitOps.
+</p>
+<div class="cta">
+<a class="btn primary" href="#contact">Contact Me</a>
+<a class="btn" href="resume.pdf">Download Resume</a>
+</div>
 </section>
 
-<!-- ABOUT -->
 <section id="about">
-    <div class="section-header">
-        <h2>About Me</h2>
-        <p>Professional Summary</p>
-    </div>
-    <div class="card">
-        <p>
-            DevOps Engineer with 6 years of IT experience, including 2.5 years in DevOps and
-            3.5 years in Cloud and Infrastructure support. Strong hands-on experience with
-            CI/CD pipelines, Docker, Kubernetes, AWS, and GitOps using ArgoCD.
-        </p>
-        <p>
-            Actively practicing DevOps through a self-managed Kubernetes homelab
-            (production-style setup) focused on deployments, monitoring, autoscaling,
-            security scanning, and resource optimization.
-        </p>
-    </div>
+<div class="title">
+<h2>About <span>Me</span></h2>
+<p>Professional summary</p>
+</div>
+<div class="card">
+<p>
+DevOps Engineer with strong hands-on experience in CI/CD pipelines,
+Docker, Kubernetes, AWS, and GitOps using ArgoCD.
+</p>
+<p>
+Actively practicing DevOps through a self-managed Kubernetes homelab
+focused on real-world production simulations, monitoring, autoscaling,
+and security.
+</p>
+</div>
 </section>
 
-<!-- SKILLS -->
 <section id="skills">
-    <div class="section-header">
-        <h2>Technical Skills</h2>
-        <p>Tools & Technologies</p>
-    </div>
+<div class="title">
+<h2>Technical <span>Skills</span></h2>
+</div>
+<div class="skills">
+<div class="card skill">
+<h3>CI/CD & GitOps</h3>
+<div class="tags">
+<span class="tag">Jenkins</span><span class="tag">Git</span>
+<span class="tag">GitHub</span><span class="tag">ArgoCD</span>
+<span class="tag">Maven</span>
+</div>
+</div>
 
-    <div class="skills-grid">
-        <div class="card skill-category">
-            <h3>CI/CD & GitOps</h3>
-            <div class="skill-tags">
-                <span class="skill-tag">Jenkins</span>
-                <span class="skill-tag">Git</span>
-                <span class="skill-tag">GitHub</span>
-                <span class="skill-tag">ArgoCD</span>
-                <span class="skill-tag">Maven</span>
-            </div>
-        </div>
+<div class="card skill">
+<h3>Kubernetes & Containers</h3>
+<div class="tags">
+<span class="tag">Docker</span><span class="tag">Kubernetes</span>
+<span class="tag">Helm</span><span class="tag">HPA</span>
+<span class="tag">Ingress</span>
+</div>
+</div>
 
-        <div class="card skill-category">
-            <h3>Containers & Kubernetes</h3>
-            <div class="skill-tags">
-                <span class="skill-tag">Docker</span>
-                <span class="skill-tag">Kubernetes</span>
-                <span class="skill-tag">Helm</span>
-                <span class="skill-tag">HPA</span>
-                <span class="skill-tag">Ingress</span>
-            </div>
-        </div>
-
-        <div class="card skill-category">
-            <h3>Cloud & Monitoring</h3>
-            <div class="skill-tags">
-                <span class="skill-tag">AWS (EC2, S3, VPC, IAM)</span>
-                <span class="skill-tag">Prometheus</span>
-                <span class="skill-tag">Grafana</span>
-                <span class="skill-tag">Trivy</span>
-            </div>
-        </div>
-    </div>
+<div class="card skill">
+<h3>Cloud & Observability</h3>
+<div class="tags">
+<span class="tag">AWS</span><span class="tag">Prometheus</span>
+<span class="tag">Grafana</span><span class="tag">Trivy</span>
+</div>
+</div>
+</div>
 </section>
 
-<!-- HOMELAB -->
-<section id="projects">
-    <div class="section-header">
-        <h2>Kubernetes Homelab</h2>
-        <p>Hands-on Production Simulation</p>
-    </div>
-
-    <div class="card">
-        <ul class="job-description">
-            <li>Built and managed a 3-node Kubernetes cluster (1 master, 2 workers) on Proxmox</li>
-            <li>Implemented GitOps deployments using ArgoCD</li>
-            <li>Configured NGINX Ingress and MetalLB</li>
-            <li>Set up monitoring with Prometheus and Grafana</li>
-            <li>Implemented resource limits, HPA, and pod self-healing</li>
-            <li>Performed vulnerability scanning using Trivy</li>
-        </ul>
-    </div>
+<section id="homelab">
+<div class="title">
+<h2>Kubernetes <span>Homelab</span></h2>
+</div>
+<div class="card homelab">
+<ul>
+<li>3-node Kubernetes cluster on Proxmox (1 master, 2 workers)</li>
+<li>GitOps deployments using ArgoCD</li>
+<li>NGINX Ingress & MetalLB</li>
+<li>Monitoring with Prometheus & Grafana</li>
+<li>Resource limits, HPA, pod self-healing</li>
+<li>Security scanning with Trivy</li>
+</ul>
+</div>
 </section>
 
-<!-- EXPERIENCE -->
 <section id="experience">
-    <div class="section-header">
-        <h2>Professional Experience</h2>
-    </div>
+<div class="title">
+<h2>Work <span>Experience</span></h2>
+</div>
+<div class="timeline">
 
-    <div class="timeline">
+<div class="job">
+<h3>DevOps Engineer</h3>
+<span>Fujitsu Consulting India Pvt Ltd | Oct 2023 – Present</span>
+<ul>
+<li>Built CI/CD pipelines using Jenkins</li>
+<li>Deployed containerized apps on Kubernetes</li>
+<li>Integrated SonarQube & Nexus</li>
+<li>Monitoring with Prometheus & Grafana</li>
+</ul>
+</div>
 
-        <div class="timeline-item">
-            <div class="job-title">DevOps Engineer</div>
-            <div class="company">Fujitsu Consulting India Pvt Ltd</div>
-            <div class="date">Oct 2023 – Present</div>
-            <ul class="job-description">
-                <li>Built and maintained CI/CD pipelines using Jenkins</li>
-                <li>Deployed containerized applications on Kubernetes</li>
-                <li>Integrated SonarQube and Nexus for code quality</li>
-                <li>Implemented monitoring using Prometheus and Grafana</li>
-            </ul>
-        </div>
+<div class="job">
+<h3>Cloud Administrator</h3>
+<span>Fujitsu Consulting India Pvt Ltd | Feb 2020 – Aug 2023</span>
+<ul>
+<li>Managed cloud infrastructure and servers</li>
+<li>Linux & Windows administration</li>
+<li>Incident & Change Management via ServiceNow</li>
+<li>24/7 production support for Japanese clients</li>
+</ul>
+</div>
 
-        <div class="timeline-item">
-            <div class="job-title">Cloud Administrator</div>
-            <div class="company">Fujitsu Consulting India Pvt Ltd</div>
-            <div class="date">Feb 2020 – Aug 2023</div>
-            <ul class="job-description">
-                <li>Managed cloud infrastructure and server operations</li>
-                <li>Handled Linux/Windows administration and backups</li>
-                <li>Worked with ServiceNow for incident and change management</li>
-                <li>Provided 24/7 production support for Japanese clients</li>
-            </ul>
-        </div>
-
-    </div>
+</div>
 </section>
 
-<!-- CONTACT -->
 <section id="contact">
-    <div class="section-header">
-        <h2>Contact</h2>
-        <p>Let’s connect</p>
-    </div>
-
-    <div class="card">
-        <p>Email: mosespraveen96@gmail.com</p>
-        <p>Phone: +91 9176281505</p>
-        <p>LinkedIn: linkedin.com/in/praveen-bhuvaneswaran</p>
-        <p>GitHub: github.com/MytPraveen</p>
-    </div>
+<div class="title">
+<h2>Get <span>In Touch</span></h2>
+</div>
+<div class="card">
+<p>Email: mosespraveen96@gmail.com</p>
+<p>Phone: +91 9176281505</p>
+<p>LinkedIn: praveen-bhuvaneswaran</p>
+<p>GitHub: MytPraveen</p>
+</div>
 </section>
 
 </div>
 
-<footer class="footer">
-    <div class="social-links">
-        <a class="social-link" href="https://github.com/MytPraveen" target="_blank"><i class="fab fa-github"></i></a>
-        <a class="social-link" href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank"><i class="fab fa-linkedin"></i></a>
-        <a class="social-link" href="mailto:mosespraveen96@gmail.com"><i class="fas fa-envelope"></i></a>
-    </div>
-    <p>© 2026 Praveen B</p>
+<footer>
+<div class="socials">
+<a href="https://github.com/MytPraveen"><i class="fab fa-github"></i></a>
+<a href="https://linkedin.com/in/praveen-bhuvaneswaran"><i class="fab fa-linkedin"></i></a>
+<a href="mailto:mosespraveen96@gmail.com"><i class="fas fa-envelope"></i></a>
+</div>
+<p>© 2026 Praveen B</p>
 </footer>
 
 <script>
-document.querySelector('.hamburger').onclick=()=>{
-    document.querySelector('.nav-links').classList.toggle('active')
-}
+const sections=document.querySelectorAll("section");
+const obs=new IntersectionObserver(entries=>{
+entries.forEach(e=>{
+if(e.isIntersecting)e.target.classList.add("show");
+})
+},{threshold:.15});
+sections.forEach(s=>obs.observe(s));
 </script>
 
 </body>
