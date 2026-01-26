@@ -13,13 +13,19 @@ spec:
     - sleep
     args:
     - 9999999
+    tty: true
+    workingDir: /workspace
     volumeMounts:
     - name: docker-config
       mountPath: /kaniko/.docker
+    - name: workspace-volume
+      mountPath: /workspace
   volumes:
   - name: docker-config
     secret:
       secretName: dockerhub-secret
+  - name: workspace-volume
+    emptyDir: {}
 """
     }
   }
@@ -38,13 +44,13 @@ spec:
       }
     }
 
-    stage('Build & Push Image (Kaniko)') {
+    stage('Build & Push Image') {
       steps {
         container('kaniko') {
           sh '''
             /kaniko/executor \
               --dockerfile=Dockerfile \
-              --context=${WORKSPACE} \
+              --context=/workspace \
               --destination=${IMAGE_NAME}:${IMAGE_TAG}
           '''
         }
@@ -68,22 +74,12 @@ spec:
 
             git config user.email "jenkins@ci.com"
             git config user.name "Jenkins CI"
-
             git add deployment.yaml
-            git commit -m "Deploy portfolio ${IMAGE_TAG}"
+            git commit -m "Deploy ${IMAGE_TAG}"
             git push
           '''
         }
       }
-    }
-  }
-
-  post {
-    success {
-      echo "✅ CI SUCCESS: ${IMAGE_NAME}:${IMAGE_TAG}"
-    }
-    failure {
-      echo "❌ CI FAILED"
     }
   }
 }
