@@ -16,7 +16,8 @@ spec:
     tty: true
     volumeMounts:
       - name: docker-config
-        mountPath: /kaniko/.docker
+        mountPath: /kaniko/.docker/config.json
+        subPath: .dockerconfigjson
       - name: workspace
         mountPath: /workspace
 
@@ -49,7 +50,7 @@ spec:
           sh '''
             /kaniko/executor \
               --dockerfile=Dockerfile \
-              --context=/home/jenkins/agent/workspace/portfolio-ci \
+              --context=$WORKSPACE \
               --destination=${IMAGE_NAME}:${IMAGE_TAG}
           '''
         }
