@@ -9,9 +9,6 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    command: ["sleep"]
-    args: ["999999"]
-    tty: true
     workingDir: /workspace
     volumeMounts:
     - name: docker-config
@@ -73,7 +70,7 @@ spec:
             git config user.email "jenkins@ci.com"
             git config user.name "Jenkins CI"
             git add deployment.yaml
-            git commit -m "Deploy ${IMAGE_TAG}"
+            git diff --quiet || git commit -m "Deploy ${IMAGE_TAG}"
             git push
           '''
         }
