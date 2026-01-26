@@ -8,30 +8,51 @@ kind: Pod
 spec:
   containers:
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    args:
-      - --dockerfile=Dockerfile
-      - --context=/home/jenkins/agent/workspace/portfolio-ci
-      - --destination=praveendevops95/portfolio:v${BUILD_NUMBER}
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+      - /busybox/sh
+      - -c
+      - sleep 999999
+    tty: true
     volumeMounts:
       - name: docker-config
         mountPath: /kaniko/.docker
-      - name: jenkins-workspace
-        mountPath: /home/jenkins/agent
+      - name: workspace
+        mountPath: /workspace
+
   volumes:
     - name: docker-config
       secret:
         secretName: dockerhub-secret
-    - name: jenkins-workspace
+    - name: workspace
       emptyDir: {}
 """
     }
   }
 
+  environment {
+    IMAGE_NAME = "praveendevops95/portfolio"
+    IMAGE_TAG  = "v${BUILD_NUMBER}"
+  }
+
   stages {
+
     stage('Checkout') {
       steps {
         checkout scm
+      }
+    }
+
+    stage('Build & Push Image') {
+      steps {
+        container('kaniko') {
+          sh '''
+            /kaniko/executor \
+              --dockerfile=Dockerfile \
+              --context=$WORKSPACE \
+              --destination=${IMAGE_NAME}:${IMAGE_TAG}
+          '''
+        }
       }
     }
   }
