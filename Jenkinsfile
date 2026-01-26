@@ -7,6 +7,7 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
+
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     command:
@@ -20,6 +21,12 @@ spec:
         subPath: .dockerconfigjson
       - name: workspace
         mountPath: /workspace
+
+  - name: trivy
+    image: aquasec/trivy:latest
+    command:
+      - sh
+    tty: true
 
   volumes:
     - name: docker-config
@@ -68,6 +75,19 @@ spec:
       }
     }
 
+    stage('Security Scan - Trivy') {
+      steps {
+        container('trivy') {
+          sh '''
+            trivy image \
+              --severity HIGH,CRITICAL \
+              --exit-code 1 \
+              ${IMAGE_NAME}:${IMAGE_TAG}
+          '''
+        }
+      }
+    }
+
     stage('Update GitOps Repo') {
       steps {
         withCredentials([
@@ -81,8 +101,6 @@ spec:
             rm -rf portfolio-gitops
             git clone https://${GIT_USER}:${GIT_TOKEN}@${GITOPS_REPO}
             cd portfolio-gitops
-
-            echo "Updating deployment.yaml to ${IMAGE_TAG}"
 
             sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" deployment.yaml
 
@@ -100,10 +118,10 @@ spec:
 
   post {
     success {
-      echo "✅ Image pushed AND GitOps updated to ${IMAGE_TAG}"
+      echo "✅ Image pushed, scanned, and deployed via GitOps: ${IMAGE_TAG}"
     }
     failure {
-      echo "❌ Pipeline failed"
+      echo "❌ Pipeline failed (build or security scan)"
     }
   }
 }
