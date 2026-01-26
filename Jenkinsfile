@@ -9,71 +9,29 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    workingDir: /workspace
+    args:
+      - --dockerfile=Dockerfile
+      - --context=/home/jenkins/agent/workspace/portfolio-ci
+      - --destination=praveendevops95/portfolio:v${BUILD_NUMBER}
     volumeMounts:
-    - name: docker-config
-      mountPath: /kaniko/.docker
-    - name: workspace-volume
-      mountPath: /workspace
+      - name: docker-config
+        mountPath: /kaniko/.docker
+      - name: jenkins-workspace
+        mountPath: /home/jenkins/agent
   volumes:
-  - name: docker-config
-    secret:
-      secretName: dockerhub-secret
-  - name: workspace-volume
-    emptyDir: {}
+    - name: docker-config
+      secret:
+        secretName: dockerhub-secret
+    - name: jenkins-workspace
+      emptyDir: {}
 """
     }
   }
 
-  environment {
-    IMAGE_NAME  = "praveendevops95/portfolio"
-    IMAGE_TAG   = "v${BUILD_NUMBER}"
-    GITOPS_REPO = "https://github.com/MytPraveen/portfolio-gitops.git"
-  }
-
   stages {
-
-    stage('Checkout Source') {
+    stage('Checkout') {
       steps {
         checkout scm
-      }
-    }
-
-    stage('Build & Push Image') {
-      steps {
-        container('kaniko') {
-          sh '''
-            /kaniko/executor \
-              --dockerfile=Dockerfile \
-              --context=/workspace \
-              --destination=${IMAGE_NAME}:${IMAGE_TAG}
-          '''
-        }
-      }
-    }
-
-    stage('Update GitOps Repo') {
-      steps {
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'github-creds',
-            usernameVariable: 'GIT_USER',
-            passwordVariable: 'GIT_TOKEN'
-          )
-        ]) {
-          sh '''
-            git clone https://${GIT_USER}:${GIT_TOKEN}@${GITOPS_REPO}
-            cd portfolio-gitops
-
-            sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" deployment.yaml
-
-            git config user.email "jenkins@ci.com"
-            git config user.name "Jenkins CI"
-            git add deployment.yaml
-            git diff --quiet || git commit -m "Deploy ${IMAGE_TAG}"
-            git push
-          '''
-        }
       }
     }
   }
