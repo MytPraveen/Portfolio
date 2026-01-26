@@ -43,21 +43,25 @@ stage('Build & Push Image') {
   }
 }
 
-    stage('Update GitOps Repo') {
-      steps {
-        sh '''
-        git clone ${GITOPS_REPO}
-        cd portfolio-gitops
+stage('Update GitOps Repo') {
+  steps {
+    withCredentials([usernamePassword(
+      credentialsId: 'github-creds',
+      usernameVariable: 'GITHUB_USER',
+      passwordVariable: 'GITHUB_TOKEN'
+    )]) {
+      sh '''
+      git clone https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/MytPraveen/portfolio-gitops.git
+      cd portfolio-gitops
 
-        sed -i "s|image: praveendevops95/portfolio:.*|image: praveendevops95/portfolio:${IMAGE_TAG}|" deployment.yaml
+      sed -i "s|image: praveendevops95/portfolio:.*|image: praveendevops95/portfolio:${IMAGE_TAG}|" deployment.yaml
 
-        git config user.email "jenkins@ci.com"
-        git config user.name "Jenkins CI"
-        git add deployment.yaml
-        git commit -m "Deploy portfolio ${IMAGE_TAG}"
-        git push
-        '''
-      }
+      git config user.email "jenkins@ci.com"
+      git config user.name "Jenkins CI"
+      git add deployment.yaml
+      git commit -m "Deploy portfolio ${IMAGE_TAG}"
+      git push
+      '''
     }
   }
 }
