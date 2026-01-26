@@ -49,7 +49,7 @@ spec:
           sh '''
             /kaniko/executor \
               --dockerfile=Dockerfile \
-              --context=$WORKSPACE \
+              --context=/home/jenkins/agent/workspace/portfolio-ci \
               --destination=${IMAGE_NAME}:${IMAGE_TAG}
           '''
         }
