@@ -26,7 +26,7 @@ spec:
           sh '''
             /kaniko/executor \
               --dockerfile=Dockerfile \
-              --context=git://https://github.com/MytPraveen/Portfolio.git \
+              --context=https://github.com/MytPraveen/Portfolio.git \
               --destination=praveendevops95/portfolio:latest
           '''
         }
