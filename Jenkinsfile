@@ -31,7 +31,7 @@ spec:
   environment {
     IMAGE_NAME  = "praveendevops95/portfolio"
     IMAGE_TAG   = "v${BUILD_NUMBER}"
-    GITOPS_REPO = "github.com/MytPraveen/portfolio-gitops.git"
+    GITOPS_REPO = "https://github.com/MytPraveen/portfolio-gitops.git"
   }
 
   stages {
