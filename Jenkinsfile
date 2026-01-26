@@ -31,10 +31,21 @@ spec:
     }
   }
 
+  // 🔥 BUILD RETENTION (THIS IS WHAT YOU ASKED)
+  options {
+    buildDiscarder(
+      logRotator(
+        numToKeepStr: '20',
+        daysToKeepStr: '14'
+      )
+    )
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
   environment {
-    IMAGE_NAME   = "praveendevops95/portfolio"
-    IMAGE_TAG    = "v${BUILD_NUMBER}"
-    GITOPS_REPO  = "github.com/MytPraveen/portfolio-gitops.git"
+    IMAGE_NAME = "praveendevops95/portfolio"
+    IMAGE_TAG  = "v${BUILD_NUMBER}"
   }
 
   stages {
@@ -58,29 +69,17 @@ spec:
       }
     }
 
-    stage('Update GitOps Repo') {
-      steps {
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'github-creds',
-            usernameVariable: 'GIT_USER',
-            passwordVariable: 'GIT_TOKEN'
-          )
-        ]) {
-          sh '''
-            git clone https://${GIT_USER}:${GIT_TOKEN}@${GITOPS_REPO}
-            cd portfolio-gitops
+  }
 
-            sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" deployment.yaml
-
-            git config user.email "jenkins@ci.local"
-            git config user.name "Jenkins CI"
-            git add deployment.yaml
-            git commit -m "Deploy ${IMAGE_TAG}"
-            git push
-          '''
-        }
-      }
+  post {
+    success {
+      echo "✅ Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
+    }
+    failure {
+      echo "❌ Build failed"
+    }
+    always {
+      echo "🧹 Build completed, old builds cleaned automatically"
     }
   }
 }
