@@ -8,9 +8,6 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    command:
-    - cat
-    tty: true
     volumeMounts:
     - name: docker-config
       mountPath: /kaniko/.docker
@@ -29,7 +26,7 @@ spec:
           sh '''
             /kaniko/executor \
               --dockerfile=Dockerfile \
-              --context=git://github.com/MytPraveen/Portfolio.git \
+              --context=git://https://github.com/MytPraveen/Portfolio.git \
               --destination=praveendevops95/portfolio:latest
           '''
         }
