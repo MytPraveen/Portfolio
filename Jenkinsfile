@@ -9,30 +9,30 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
+    command:
+    - sleep
     args:
-      - --dockerfile=Dockerfile
-      - --context=.
-      - --destination=praveendevops95/portfolio:v\${BUILD_NUMBER}
+    - 9999999
     volumeMounts:
-      - name: docker-config
-        mountPath: /kaniko/.docker
-  volumes:
     - name: docker-config
-      secret:
-        secretName: dockerhub-secret
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: docker-config
+    secret:
+      secretName: dockerhub-secret
 """
     }
   }
 
   environment {
-    IMAGE_TAG   = "v${BUILD_NUMBER}"
     IMAGE_NAME  = "praveendevops95/portfolio"
+    IMAGE_TAG   = "v${BUILD_NUMBER}"
     GITOPS_REPO = "github.com/MytPraveen/portfolio-gitops.git"
   }
 
   stages {
 
-    stage('Checkout Source Code') {
+    stage('Checkout Source') {
       steps {
         checkout scm
       }
@@ -42,8 +42,10 @@ spec:
       steps {
         container('kaniko') {
           sh '''
-            echo "Building image ${IMAGE_NAME}:${IMAGE_TAG}"
-            # Kaniko runs automatically via container args
+            /kaniko/executor \
+              --dockerfile=Dockerfile \
+              --context=${WORKSPACE} \
+              --destination=${IMAGE_NAME}:${IMAGE_TAG}
           '''
         }
       }
@@ -59,8 +61,6 @@ spec:
           )
         ]) {
           sh '''
-            echo "Updating GitOps repo with new image tag"
-
             git clone https://${GIT_USER}:${GIT_TOKEN}@${GITOPS_REPO}
             cd portfolio-gitops
 
@@ -80,10 +80,10 @@ spec:
 
   post {
     success {
-      echo "CI successful. Image ${IMAGE_NAME}:${IMAGE_TAG} deployed via GitOps."
+      echo "✅ CI SUCCESS: ${IMAGE_NAME}:${IMAGE_TAG}"
     }
     failure {
-      echo "CI failed. Check logs."
+      echo "❌ CI FAILED"
     }
   }
 }
