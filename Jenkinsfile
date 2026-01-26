@@ -30,13 +30,18 @@ spec:
 
   stages {
 
-    stage('Build & Push Image') {
-      steps {
-        container('kaniko') {
-          sh 'echo Image built and pushed'
-        }
-      }
+stage('Build & Push Image') {
+  steps {
+    container('kaniko') {
+      sh '''
+        /kaniko/executor \
+          --dockerfile=Dockerfile \
+          --context=$WORKSPACE \
+          --destination=praveendevops95/portfolio:${IMAGE_TAG}
+      '''
     }
+  }
+}
 
     stage('Update GitOps Repo') {
       steps {
