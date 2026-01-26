@@ -31,7 +31,7 @@ spec:
     }
   }
 
-  // 🔥 BUILD RETENTION (THIS IS WHAT YOU ASKED)
+  // ✅ BUILD RETENTION (CORRECT)
   options {
     buildDiscarder(
       logRotator(
@@ -40,7 +40,6 @@ spec:
       )
     )
     disableConcurrentBuilds()
-    timestamps()
   }
 
   environment {
@@ -68,7 +67,6 @@ spec:
         }
       }
     }
-
   }
 
   post {
@@ -79,7 +77,7 @@ spec:
       echo "❌ Build failed"
     }
     always {
-      echo "🧹 Build completed, old builds cleaned automatically"
+      echo "🧹 Old builds cleaned automatically by Jenkins"
     }
   }
 }
