@@ -9,10 +9,8 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    command:
-    - sleep
-    args:
-    - 9999999
+    command: ["sleep"]
+    args: ["999999"]
     tty: true
     workingDir: /workspace
     volumeMounts:
