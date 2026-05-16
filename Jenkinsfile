@@ -190,7 +190,7 @@ Check:
 
     always {
 
-      cleanWs()
+      echo "Pipeline finished"
 
     }
   }
