@@ -26,12 +26,15 @@ spec:
     image: aquasec/trivy:latest
     command:
       - sh
+      - -c
+      - sleep 999999
     tty: true
 
   volumes:
     - name: docker-config
       secret:
         secretName: dockerhub-secret
+
     - name: workspace
       emptyDir: {}
 """
@@ -45,31 +48,45 @@ spec:
         daysToKeepStr: '14'
       )
     )
+
     disableConcurrentBuilds()
+
+    timestamps()
   }
 
   environment {
-    IMAGE_NAME   = "praveendevops95/portfolio"
-    IMAGE_TAG    = "v${BUILD_NUMBER}"
-    GITOPS_REPO  = "github.com/MytPraveen/portfolio-gitops.git"
+
+    IMAGE_NAME  = "praveendevops95/devops-portfolio"
+
+    IMAGE_TAG   = "v${BUILD_NUMBER}"
+
+    GITOPS_REPO = "github.com/MytPraveen/portfolio-gitops.git"
+
   }
 
   stages {
 
-    stage('Checkout App Source') {
+    stage('Checkout Application Source') {
       steps {
         checkout scm
       }
     }
 
-    stage('Build & Push Image') {
+    stage('Build & Push Docker Image') {
       steps {
+
         container('kaniko') {
+
           sh '''
+            echo "Building Docker image..."
+
             /kaniko/executor \
               --dockerfile=Dockerfile \
               --context=$WORKSPACE \
-              --destination=${IMAGE_NAME}:${IMAGE_TAG}
+              --destination=${IMAGE_NAME}:${IMAGE_TAG} \
+              --cleanup
+
+            echo "Docker image pushed successfully"
           '''
         }
       }
@@ -77,19 +94,27 @@ spec:
 
     stage('Security Scan - Trivy') {
       steps {
+
         container('trivy') {
+
           sh '''
+            echo "Running Trivy security scan..."
+
             trivy image \
               --severity HIGH,CRITICAL \
               --exit-code 1 \
-              ${IMAGE_NAME}:${IMAGE_TAG}
+              docker.io/${IMAGE_NAME}:${IMAGE_TAG}
+
+            echo "Trivy scan completed successfully"
           '''
         }
       }
     }
 
-    stage('Update GitOps Repo') {
+    stage('Update GitOps Repository') {
+
       steps {
+
         withCredentials([
           usernamePassword(
             credentialsId: 'github-creds',
@@ -97,19 +122,30 @@ spec:
             passwordVariable: 'GIT_TOKEN'
           )
         ]) {
+
           sh '''
+            echo "Cloning GitOps repository..."
+
             rm -rf portfolio-gitops
+
             git clone https://${GIT_USER}:${GIT_TOKEN}@${GITOPS_REPO}
+
             cd portfolio-gitops
 
-            sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" deployment.yaml
+            echo "Updating deployment image..."
+
+            sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
 
             git config user.email "jenkins@ci.com"
             git config user.name "Jenkins CI"
 
             git add deployment.yaml
-            git commit -m "Deploy ${IMAGE_NAME}:${IMAGE_TAG}"
+
+            git commit -m "Updated image to ${IMAGE_NAME}:${IMAGE_TAG}"
+
             git push
+
+            echo "GitOps repository updated successfully"
           '''
         }
       }
@@ -117,11 +153,45 @@ spec:
   }
 
   post {
+
     success {
-      echo "✅ Image pushed, scanned, and deployed via GitOps: ${IMAGE_TAG}"
+
+      echo """
+========================================
+✅ PIPELINE COMPLETED SUCCESSFULLY
+========================================
+
+Docker Image:
+${IMAGE_NAME}:${IMAGE_TAG}
+
+GitOps repository updated.
+ArgoCD will sync automatically.
+
+========================================
+"""
     }
+
     failure {
-      echo "❌ Pipeline failed (build or security scan)"
+
+      echo """
+========================================
+❌ PIPELINE FAILED
+========================================
+
+Check:
+- Docker build logs
+- Trivy scan results
+- GitHub credentials
+- GitOps deployment.yaml
+
+========================================
+"""
+    }
+
+    always {
+
+      cleanWs()
+
     }
   }
 }
