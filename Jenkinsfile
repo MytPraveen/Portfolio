@@ -209,7 +209,10 @@ spec:
             echo "📦 Updating staging image tag to ${IMAGE_TAG}..."
              mkdir -p /tmp/.ssh
               ssh-keyscan github.com > /tmp/.ssh/known_hosts
-              export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
+
+              echo "SSH files:"
+               ls -la /root/.ssh
+              export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
 
             git clone git@${GITOPS_REPO} gitops-repo
             cd gitops-repo
