@@ -207,27 +207,23 @@ spec:
         container('git') {
           sh '''
             echo "📦 Updating staging image tag to ${IMAGE_TAG}..."
+             mkdir -p /tmp/.ssh
+              ssh-keyscan github.com > /tmp/.ssh/known_hosts
+              export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
 
-            # Setup SSH for GitHub
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-            # Clone the GitOps repo
             git clone git@${GITOPS_REPO} gitops-repo
             cd gitops-repo
 
-            # Configure git identity
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            # Update the image tag in staging deployment yaml
-            # sed finds the line with "image:" and replaces the tag
             sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" \
               staging/deployment.yaml
 
-            # Commit and push — ArgoCD will detect this change
             git add staging/deployment.yaml
-            git commit -m "ci: update staging image to ${IMAGE_TAG} [build #${BUILD_NUMBER}]"
+
+            git commit -m "ci: update staging image to ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
+
             git push origin main
 
             echo "✅ Staging deployment.yaml updated"
@@ -421,7 +417,7 @@ spec:
 
     always {
       echo "Pipeline finished. Cleaning up workspace."
-      cleanWs()   // delete workspace files after every build
+      deleteDir()   // delete workspace files after every build
     }
 
   }
