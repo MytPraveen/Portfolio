@@ -286,26 +286,36 @@ spec:
     // There's always a human approval gate. This protects us
     // from deploying something that passed tests but has
     // business-level problems."
-    // ----------------------------------------------------------
-    stage('Approval: Deploy to Production?') {
+// ----------------------------------------------------------
+// STAGE 7: Deploy to PRODUCTION
+// ----------------------------------------------------------
+    stage('Deploy to Production') {
       steps {
-        timeout(time: 1, unit: 'HOURS') {
-          input(
-            message: """
-              🚀 Deploy ${IMAGE_NAME}:${IMAGE_TAG} to PRODUCTION?
+    container('git') {
+      sh '''
+        echo "🚀 Deploying ${IMAGE_TAG} to PRODUCTION..."
 
-              ✅ Trivy scan: passed
-              ✅ Staging deploy: successful
-              ✅ Smoke test: passed
+        mkdir -p /tmp/.ssh
+        ssh-keyscan github.com > /tmp/.ssh/known_hosts
 
-              Approve to deploy to praveeninfra.online
-            """,
-            ok: 'Yes, Deploy to Production',
-            submitter: 'admin'   // only 'admin' user can approve
-          )
-        }
-      }
+        export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
+
+        cd gitops-repo
+
+        sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
+
+        git add deployment.yaml
+
+        git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
+
+        git push origin main
+
+        echo "✅ Production deployment.yaml updated"
+        echo "ArgoCD will sync within 3 minutes automatically"
+      '''
     }
+  }
+}
 
     // ----------------------------------------------------------
     // STAGE 7: Deploy to PRODUCTION
@@ -419,8 +429,7 @@ spec:
     }
 
     always {
-      echo "Pipeline finished. Cleaning up workspace."
-      deleteDir()   // delete workspace files after every build
+      echo "Pipeline finished"
     }
 
   }
