@@ -81,7 +81,7 @@ spec:
   environment {
     IMAGE_NAME    = "praveendevops95/devops-portfolio"
     IMAGE_TAG     = "v${BUILD_NUMBER}"
-    GITOPS_REPO   = "github.com/MytPraveen/portfolio-gitops.git"
+    GITOPS_REPO   = "github.com:MytPraveen/portfolio-gitops.git"
     GIT_USER_NAME = "Jenkins CI"
     GIT_USER_EMAIL= "jenkins@ci.com"
 
