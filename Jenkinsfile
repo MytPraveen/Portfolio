@@ -287,14 +287,19 @@ spec:
           sh '''
             echo "🚀 Deploying ${IMAGE_TAG} to PRODUCTION..."
 
+            mkdir -p /tmp/.ssh
+            ssh-keyscan github.com > /tmp/.ssh/known_hosts
+
+             export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
+
             cd gitops-repo
 
-            # Update production deployment yaml
-            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" \
-              deployment.yaml
+            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
 
             git add deployment.yaml
-            git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG} [build #${BUILD_NUMBER}]"
+
+            git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
+
             git push origin main
 
             echo "✅ Production deployment.yaml updated"
