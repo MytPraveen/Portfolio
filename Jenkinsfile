@@ -47,6 +47,11 @@ spec:
       mountPath: /root/.ssh
       readOnly: true
 
+  - name: sonar
+    image: sonarsource/sonar-scanner-cli:latest
+    command: ["cat"]
+    tty: true
+
   volumes:
   - name: docker-config
     secret:
@@ -108,6 +113,29 @@ spec:
         sh 'ls -la'   // show files so you can verify in logs
       }
     }
+    stage('SonarQube Scan') {
+      steps {
+      container('sonar') {
+      withSonarQubeEnv('SonarQube') {
+        sh '''
+          sonar-scanner \
+            -Dsonar.projectKey=portfolio \
+            -Dsonar.projectName=portfolio \
+            -Dsonar.sources=. \
+            -Dsonar.sourceEncoding=UTF-8
+        '''
+      }
+    }
+  }
+}
+
+stage('Quality Gate') {
+  steps {
+    timeout(time: 5, unit: 'MINUTES') {
+      waitForQualityGate abortPipeline: true
+    }
+  }
+}
 
     // ----------------------------------------------------------
     // STAGE 2: Build & Push Docker Image using Kaniko
