@@ -205,7 +205,7 @@ stage('Quality Gate') {
           container('trivy') {
             sh '''
               trivy image \
-                --exit-code 0 \
+                --exit-code 1 \
                 --severity CRITICAL,HIGH,MEDIUM \
                 --format json \
                 --output trivy-report.json \
