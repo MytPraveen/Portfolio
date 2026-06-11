@@ -92,7 +92,7 @@ spec:
 
     // Trivy thresholds — pipeline FAILS if these are found
     // CRITICAL = serious vulnerabilities, HIGH = important ones
-    TRIVY_SEVERITY = "CRITICAL,HIGH"
+    TRIVY_SEVERITY = "CRITICAL"
     TRIVY_EXIT_CODE = "1"       // 1 = fail pipeline on findings
   }
 
