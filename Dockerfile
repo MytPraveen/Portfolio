@@ -14,6 +14,7 @@ RUN rm -rf /usr/share/nginx/html/*
 
 # Copy application files
 COPY index.html /usr/share/nginx/html/
+COPY blog.html /usr/share/nginx/html/
 COPY Praveen_B_Resume.pdf /usr/share/nginx/html/
 
 # Create non-root user and group
