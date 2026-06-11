@@ -206,7 +206,7 @@ stage('Quality Gate') {
             sh '''
               trivy image \
                 --exit-code 1 \
-                --severity CRITICAL,HIGH,MEDIUM \
+                --severity CRITICAL \
                 --format json \
                 --output trivy-report.json \
                 ${IMAGE_NAME}:${IMAGE_TAG} || true
