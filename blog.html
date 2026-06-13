@@ -896,9 +896,9 @@ async function deleteCurrentPost() {
     } else {
       showToast(data.error || 'Failed to delete post', 'error');
     }
-  } catch (e) {
-    showToast('Network error — could not delete', 'error');
-  }
+  } catch (error) {
+  console.error('Delete post failed:', error);
+  showToast('Network error — could not delete', 'error');
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
