@@ -354,6 +354,13 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   <div class="post-modal" id="postModal">
     <div class="post-modal-header">
       <button class="post-close" id="postClose">✕</button>
+<button class="post-delete" id="postDelete" onclick="deleteCurrentPost()"
+  style="position:absolute;top:1.5rem;right:4rem;width:40px;height:40px;
+         background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+         border-radius:10px;display:flex;align-items:center;justify-content:center;
+         cursor:pointer;font-size:1rem;color:#f87171;transition:.2s;"
+  title="Delete this post">🗑</button>
+
       <div class="post-category-badge" id="postCategory"></div>
       <h1 class="post-title" id="postTitle"></h1>
       <div class="post-byline">
@@ -860,6 +867,39 @@ document.addEventListener('keydown', e=>{
     document.body.style.overflow='';
   }
 });
+
+async function deleteCurrentPost() {
+  if (!currentBlogId) return;
+
+  // confirm before deleting
+  const confirmed = confirm(
+    'Delete this post permanently? This cannot be undone.'
+  );
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`${API}/blogs/${currentBlogId}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      // close the modal
+      document.getElementById('postOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+      currentBlogId = null;
+
+      showToast('Post deleted successfully');
+
+      // refresh the blog grid
+      fetchBlogs();
+    } else {
+      showToast(data.error || 'Failed to delete post', 'error');
+    }
+  } catch (e) {
+    showToast('Network error — could not delete', 'error');
+  }
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 fetchBlogs();
