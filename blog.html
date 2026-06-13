@@ -899,8 +899,8 @@ async function deleteCurrentPost() {
   } catch (error) {
   console.error('Delete post failed:', error);
   showToast('Network error — could not delete', 'error');
+  }
 }
-
 // ── INIT ──────────────────────────────────────────────────────────────────────
 fetchBlogs();
 </script>
