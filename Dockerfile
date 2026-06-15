@@ -1,4 +1,99 @@
 # ============================================================
+# Use stable lightweight nginx
+# ============================================================
+FROM nginx:stable-alpine
+
+# ============================================================
+# METADATA (best practice for traceability)
+# ============================================================
+LABEL maintainer="Praveen B"
+LABEL description="DevOps Portfolio Website"
+LABEL version="1.0"
+LABEL org.opencontainers.image.source="https://github.com/MytPraveen/Portfolio"
+
+# ============================================================
+# SECURITY UPDATES & INSTALLATIONS (Merged into single RUN)
+# ============================================================
+RUN apk update && apk upgrade && rm -rf /var/cache/apk/* \
+    && apk add --no-cache wget curl
+
+# ============================================================
+# REMOVE DEFAULT FILES
+# ============================================================
+RUN rm -rf /usr/share/nginx/html/*
+
+# ============================================================
+# COPY APPLICATION FILES
+# ============================================================
+COPY index.html /usr/share/nginx/html/
+COPY blog.html /usr/share/nginx/html/
+COPY Praveen_B_Resume.pdf /usr/share/nginx/html/
+
+# ============================================================
+# NGINX CONFIGURATION WITH SECURITY HEADERS (Single RUN)
+# ============================================================
+RUN echo 'server { \
+    listen 80; \
+    server_name _; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    \
+    # Security Headers \
+    add_header X-Frame-Options "SAMEORIGIN" always; \
+    add_header X-Content-Type-Options "nosniff" always; \
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; \
+    add_header X-XSS-Protection "1; mode=block" always; \
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always; \
+    add_header Content-Security-Policy "default-src '\''self'\''; script-src '\''self'\'' '\''unsafe-inline'\'' https://fonts.googleapis.com; style-src '\''self'\'' '\''unsafe-inline'\'' https://fonts.googleapis.com; font-src '\''self'\'' https://fonts.gstatic.com; img-src '\''self'\'' data:; connect-src '\''self'\'' https://api.praveeninfra.online; frame-ancestors '\''none'\'';" always; \
+    add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()" always; \
+    \
+    server_tokens off; \
+    \
+    location / { \
+        try_files $uri $uri/ =404; \
+    } \
+    \
+    location ~ /\. { \
+        deny all; \
+    } \
+    \
+    location ~* \.(pdf|jpg|jpeg|png|gif|ico|css|js)$ { \
+        expires 30d; \
+        add_header Cache-Control "public, immutable"; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
+# ============================================================
+# CREATE NON-ROOT USER (Security best practice)
+# ============================================================
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# ============================================================
+# SET PROPER OWNERSHIP
+# ============================================================
+RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/log/nginx
+
+# ============================================================
+# NGINX RUNS AS NON-ROOT USER
+# ============================================================
+RUN sed -i 's/^user.*$//g' /etc/nginx/nginx.conf \
+    && echo "user appuser;" >> /etc/nginx/nginx.conf
+
+# ============================================================
+# EXPOSE PORT
+# ============================================================
+EXPOSE 80
+
+# ============================================================
+# HEALTHCHECK
+# ============================================================
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+
+# ============================================================
+# START NGINX
+# ============================================================
+CMD ["nginx", "-g", "daemon off;"]# ============================================================
 # Stage 1: Use stable lightweight nginx
 # ============================================================
 FROM nginx:stable-alpine
