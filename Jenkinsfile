@@ -100,15 +100,11 @@ spec:
     
     ZAP_REPORT_DIR = "zap-reports"
     
-    // Slack notification channel (configure in Jenkins credentials)
     SLACK_CHANNEL = "#devops-deployments"
   }
 
   stages {
 
-    // ============================================================
-    // STAGE 1: Checkout with Commit Info
-    // ============================================================
     stage('Checkout Application Source') {
       steps {
         checkout scm
@@ -125,9 +121,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 2: SonarQube Scan
-    // ============================================================
     stage('SonarQube Scan') {
       steps {
         container('sonar') {
@@ -138,17 +131,15 @@ spec:
                 -Dsonar.projectName=portfolio \
                 -Dsonar.sources=. \
                 -Dsonar.sourceEncoding=UTF-8 \
-                -Dsonar.javascript.file.suffixes=.js,.html \
-                -Dsonar.exclusions=**/node_modules/**
+                -Dsonar.exclusions=**/*.pdf,**/.DS_Store,**/node_modules/** \
+                -Dsonar.html.file.suffixes=.html \
+                -Dsonar.javascript.file.suffixes=.js
             '''
           }
         }
       }
     }
 
-    // ============================================================
-    // STAGE 3: Quality Gate (Blocks pipeline if quality fails)
-    // ============================================================
     stage('Quality Gate') {
       steps {
         timeout(time: 5, unit: 'MINUTES') {
@@ -157,9 +148,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 4: Build & Push Docker Image (With Commit Tagging)
-    // ============================================================
     stage('Build & Push Docker Image') {
       steps {
         container('kaniko') {
@@ -190,9 +178,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 5: Security Scan with Trivy (Fail on CRITICAL)
-    // ============================================================
     stage('Security Scan - Trivy') {
       steps {
         container('trivy') {
@@ -230,10 +215,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 6: OWASP ZAP - Staging Security Scan
-    // FIXED: FAILS on critical vulnerabilities (removed || true)
-    // ============================================================
     stage('OWASP ZAP - Staging Security Scan') {
       steps {
         container('zap') {
@@ -249,7 +230,6 @@ spec:
             
             mkdir -p /zap/wrk/${ZAP_REPORT_DIR}
             
-            # Run ZAP - pipeline will FAIL if critical vulnerabilities found
             zap-baseline.py \
               -t ${STAGING_URL} \
               -r /zap/wrk/${ZAP_REPORT_DIR}/zap-report.html \
@@ -258,7 +238,6 @@ spec:
               -J /zap/wrk/${ZAP_REPORT_DIR}/zap-report.json \
               -I
             
-            # If we reach here, no critical vulnerabilities found
             cp -r /zap/wrk/${ZAP_REPORT_DIR} ${WORKSPACE}/ || true
             
             echo ""
@@ -270,11 +249,9 @@ spec:
       post {
         always {
           script {
-            // Archive ZAP reports
             archiveArtifacts artifacts: "${ZAP_REPORT_DIR}/**/*",
                              allowEmptyArchive: true
             
-            // Publish HTML report in Jenkins
             publishHTML target: [
               allowMissing: true,
               alwaysLinkToLastBuild: true,
@@ -288,17 +265,12 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 7: Image Size Check (Real company best practice)
-    // ============================================================
     stage('Image Size Check') {
       steps {
         container('curl') {
           sh '''
             echo "📏 Checking Docker image size..."
             
-            # Get image size using docker inspect (via remote API)
-            # For kaniko builds, we check the registry
             SIZE=$(curl -s -X GET https://hub.docker.com/v2/repositories/${IMAGE_NAME}/tags/${IMAGE_TAG} | jq -r '.images[0].size // 0')
             
             if [ -n "$SIZE" ] && [ "$SIZE" -gt 0 ]; then
@@ -307,10 +279,6 @@ spec:
               
               if [ ${SIZE_MB} -gt 100 ]; then
                 echo "⚠️  WARNING: Image size > 100MB (${SIZE_MB} MB)"
-                echo "Consider optimizing Dockerfile:"
-                echo "  - Use multi-stage builds"
-                echo "  - Remove unnecessary files"
-                echo "  - Combine RUN commands"
               else
                 echo "✅ Image size is good (${SIZE_MB} MB)"
               fi
@@ -322,9 +290,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 8: Deploy to Staging
-    // ============================================================
     stage('Deploy to Staging') {
       steps {
         container('git') {
@@ -355,9 +320,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 9: Staging Post-Deployment Validation
-    // ============================================================
     stage('Staging - Post-Deployment Validation') {
       steps {
         container('curl') {
@@ -367,7 +329,6 @@ spec:
 
             echo "✅ Running POST-DEPLOYMENT VALIDATION on staging..."
 
-            # Check HTTP status (retry up to 3 times)
             for i in 1 2 3; do
               STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${STAGING_URL} || echo "000")
               if [ "$STATUS" = "200" ]; then
@@ -383,15 +344,9 @@ spec:
               exit 1
             fi
 
-            # Check response time
             RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${STAGING_URL})
             echo "Response time: ${RESPONSE_TIME}s"
 
-            if (( $(echo "$RESPONSE_TIME > 2" | bc -l 2>/dev/null || echo 0) )); then
-              echo "⚠️  Warning: Response time > 2 seconds"
-            fi
-
-            # Validate content
             curl -s ${STAGING_URL} | grep -q "Praveen" || {
               echo "❌ Expected content 'Praveen' not found"
               exit 1
@@ -404,9 +359,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 10: Deploy to Production
-    // ============================================================
     stage('Deploy to Production') {
       steps {
         container('git') {
@@ -433,9 +385,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 11: Production Post-Deployment Validation
-    // ============================================================
     stage('Production - Post-Deployment Validation') {
       steps {
         container('curl') {
@@ -445,7 +394,6 @@ spec:
 
             echo "🏥 Running PRODUCTION POST-DEPLOYMENT VALIDATION..."
 
-            # Check HTTP status with retry
             for i in 1 2 3 4 5; do
               STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${PROD_URL} || echo "000")
               if [ "$STATUS" = "200" ]; then
@@ -461,20 +409,9 @@ spec:
               exit 1
             fi
 
-            # Check response time
             RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
             echo "Response time: ${RESPONSE_TIME}s"
 
-            # Check SSL certificate (if HTTPS)
-            echo "Checking SSL certificate..."
-            SSL_INFO=$(echo | openssl s_client -servername praveeninfra.online -connect praveeninfra.online:443 2>/dev/null | openssl x509 -noout -dates 2>/dev/null || echo "No SSL")
-            if [[ "$SSL_INFO" != "No SSL" ]]; then
-              echo "✅ SSL certificate valid"
-            else
-              echo "⚠️  No SSL certificate found (HTTP only)"
-            fi
-
-            # Content validation
             curl -s ${PROD_URL} | grep -q "Praveen" || {
               echo "❌ Expected content not found"
               exit 1
@@ -488,9 +425,6 @@ spec:
       }
     }
 
-    // ============================================================
-    // STAGE 12: Performance Baseline Check
-    // ============================================================
     stage('Performance Baseline Check') {
       steps {
         container('curl') {
@@ -525,11 +459,8 @@ spec:
       }
     }
 
-  } // end stages
+  }
 
-  // ============================================================
-  // POST: Runs after pipeline finishes
-  // ============================================================
   post {
 
     success {
@@ -550,15 +481,6 @@ spec:
         - OWASP ZAP: ${BUILD_URL}artifact/${ZAP_REPORT_DIR}/zap-report.html
         ============================================
       """
-      
-      // Uncomment when Slack plugin is configured
-      /*
-      slackSend(
-        channel: "${SLACK_CHANNEL}",
-        color: "good",
-        message: "✅ *${JOB_NAME}* #${BUILD_NUMBER} succeeded!\\nImage: ${IMAGE_TAG}-${GIT_COMMIT}\\nSite: ${PROD_URL}\\n<${BUILD_URL}|View Build>"
-      )
-      */
     }
 
     failure {
@@ -577,15 +499,6 @@ spec:
         - Infrastructure issue
         ============================================
       """
-      
-      // Uncomment when Slack plugin is configured
-      /*
-      slackSend(
-        channel: "${SLACK_CHANNEL}",
-        color: "danger",
-        message: "❌ *${JOB_NAME}* #${BUILD_NUMBER} FAILED at stage: ${env.STAGE_NAME}\\n<${BUILD_URL}|View Build>"
-      )
-      */
     }
 
     unstable {
@@ -601,11 +514,8 @@ spec:
 
     always {
       echo "Pipeline finished at: ${new Date()}"
-      
-      // Clean up workspace
-      cleanWs()
     }
 
   }
 
-} // end pipeline
+}
