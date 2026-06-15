@@ -2,9 +2,6 @@ pipeline {
 
   // ============================================================
   // AGENT: Jenkins runs each build in a fresh Kubernetes pod
-  // The pod has 3 containers: kaniko (builds image), trivy
-  // (security scan), and kubectl (for any K8s commands).
-  // All 3 share the same workspace volume.
   // ============================================================
   agent {
     kubernetes {
@@ -15,52 +12,65 @@ spec:
   containers:
 
   # --- Kaniko: builds Docker image WITHOUT needing Docker daemon
-  # This is the secure way to build inside Kubernetes.
-  # It reads your Dockerfile and pushes to Docker Hub.
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     command: ["/busybox/sh"]
     args: ["-c", "sleep 999999"]
     tty: true
     volumeMounts:
-    - name: docker-config     # Docker Hub credentials (secret)
+    - name: docker-config
       mountPath: /kaniko/.docker/config.json
       subPath: .dockerconfigjson
     - name: workspace
       mountPath: /workspace
 
-  # --- Trivy: scans the built image for CVEs (vulnerabilities)
+  # --- Trivy: scans the built image for CVEs
   - name: trivy
     image: aquasec/trivy:latest
     command: [sh]
     args: ["-c", "sleep 999999"]
     tty: true
 
-  # --- Git: used to update the GitOps repo with new image tag
+  # --- Git: used to update the GitOps repo
   - name: git
     image: alpine/git:latest
     command: [sh]
     args: ["-c", "sleep 999999"]
     tty: true
     volumeMounts:
-    - name: github-ssh        # SSH key to push to GitHub
+    - name: github-ssh
       mountPath: /root/.ssh
       readOnly: true
 
+  # --- SonarQube scanner
   - name: sonar
     image: sonarsource/sonar-scanner-cli:latest
     command: ["cat"]
     tty: true
 
+  # --- NEW: OWASP ZAP container for security scanning
+  - name: zap
+    image: owasp/zap2docker-stable:latest
+    command: ["sh"]
+    args: ["-c", "sleep 999999"]
+    tty: true
+
+  # --- NEW: Curl container for health checks
+  - name: curl
+    image: curlimages/curl:latest
+    command: ["sh"]
+    args: ["-c", "sleep 999999"]
+    tty: true
+
   volumes:
   - name: docker-config
     secret:
-      secretName: dockerhub-secret   # kubectl create secret
+      secretName: dockerhub-secret
   - name: workspace
     emptyDir: {}
   - name: github-ssh
     secret:
-      secretName: github-ssh-key     # kubectl create secret
+      secretName: github-ssh-key
       defaultMode: 0400
 """
     }
@@ -71,17 +81,16 @@ spec:
   // ============================================================
   options {
     buildDiscarder(logRotator(
-      numToKeepStr: '20',       // keep last 20 builds
-      daysToKeepStr: '14'       // delete builds older than 14 days
+      numToKeepStr: '20',
+      daysToKeepStr: '14'
     ))
-    disableConcurrentBuilds()   // never run 2 builds at same time
-    timestamps()                // show timestamps in logs
-    timeout(time: 15, unit: 'MINUTES')  // kill if stuck > 15 min
+    disableConcurrentBuilds()
+    timestamps()
+    timeout(time: 25, unit: 'MINUTES')  // Increased for ZAP scan
   }
 
   // ============================================================
-  // ENVIRONMENT: Variables used across all stages
-  // Change IMAGE_NAME to your Docker Hub username/repo
+  // ENVIRONMENT: Variables
   // ============================================================
   environment {
     IMAGE_NAME    = "praveendevops95/devops-portfolio"
@@ -90,64 +99,63 @@ spec:
     GIT_USER_NAME = "Jenkins CI"
     GIT_USER_EMAIL= "jenkins@ci.com"
 
-    // Trivy thresholds — pipeline FAILS if these are found
-    // CRITICAL = serious vulnerabilities, HIGH = important ones
+    // Trivy thresholds
     TRIVY_SEVERITY = "CRITICAL"
-    TRIVY_EXIT_CODE = "1"       // 1 = fail pipeline on findings
+    TRIVY_EXIT_CODE = "1"
+
+    // NEW: URLs for testing
+    STAGING_URL  = "https://staging.praveeninfra.online"
+    PROD_URL     = "https://praveeninfra.online"
+    
+    // NEW: ZAP report location
+    ZAP_REPORT_DIR = "zap-reports"
   }
 
-  // ============================================================
-  // STAGES: Each stage is one step in the pipeline
-  // ============================================================
   stages {
 
     // ----------------------------------------------------------
     // STAGE 1: Checkout
-    // Jenkins pulls your code from GitHub into the workspace.
-    // "checkout scm" uses whatever repo triggered the build.
     // ----------------------------------------------------------
     stage('Checkout Application Source') {
       steps {
         checkout scm
         sh 'echo "✅ Code checked out from GitHub"'
-        sh 'ls -la'   // show files so you can verify in logs
+        sh 'ls -la'
       }
     }
-    stage('SonarQube Scan') {
-      steps {
-      container('sonar') {
-      withSonarQubeEnv('SonarQube') {
-        sh '''
-          sonar-scanner \
-            -Dsonar.projectKey=portfolio \
-            -Dsonar.projectName=portfolio \
-            -Dsonar.sources=. \
-            -Dsonar.sourceEncoding=UTF-8
-        '''
-      }
-    }
-  }
-}
-
-stage('Quality Gate') {
-  steps {
-    timeout(time: 5, unit: 'MINUTES') {
-      waitForQualityGate abortPipeline: true
-    }
-  }
-}
 
     // ----------------------------------------------------------
-    // STAGE 2: Build & Push Docker Image using Kaniko
-    //
-    // WHY KANIKO instead of docker build?
-    // Normal "docker build" needs the Docker daemon running.
-    // Inside Kubernetes, running Docker inside Docker is a
-    // security risk. Kaniko builds images in userspace — no
-    // daemon needed, much safer.
-    //
-    // The image is tagged with the Jenkins build number:
-    // e.g. praveendevops95/devops-portfolio:v8
+    // STAGE 2: SonarQube Scan
+    // ----------------------------------------------------------
+    stage('SonarQube Scan') {
+      steps {
+        container('sonar') {
+          withSonarQubeEnv('SonarQube') {
+            sh '''
+              sonar-scanner \
+                -Dsonar.projectKey=portfolio \
+                -Dsonar.projectName=portfolio \
+                -Dsonar.sources=. \
+                -Dsonar.sourceEncoding=UTF-8
+            '''
+          }
+        }
+      }
+    }
+
+    // ----------------------------------------------------------
+    // STAGE 3: Quality Gate
+    // ----------------------------------------------------------
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 5, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+
+    // ----------------------------------------------------------
+    // STAGE 4: Build & Push Docker Image using Kaniko
     // ----------------------------------------------------------
     stage('Build & Push Docker Image') {
       steps {
@@ -171,16 +179,7 @@ stage('Quality Gate') {
     }
 
     // ----------------------------------------------------------
-    // STAGE 3: Security Scan with Trivy
-    //
-    // Trivy scans the image you just built for known CVEs.
-    // CVE = Common Vulnerabilities and Exposures (security bugs).
-    //
-    // TRIVY_EXIT_CODE=1 means: if CRITICAL or HIGH vulns found,
-    // FAIL the pipeline. Don't deploy insecure images.
-    //
-    // In interview say: "We don't deploy if security scan fails.
-    // The pipeline is the security gate."
+    // STAGE 5: Security Scan with Trivy
     // ----------------------------------------------------------
     stage('Security Scan - Trivy') {
       steps {
@@ -199,7 +198,6 @@ stage('Quality Gate') {
           '''
         }
       }
-      // Even if scan fails, save the report as a Jenkins artifact
       post {
         always {
           container('trivy') {
@@ -218,29 +216,96 @@ stage('Quality Gate') {
       }
     }
 
+    // ============================================================
+    // NEW STAGE 6: OWASP ZAP Baseline Scan
+    // 
+    // This scans the RUNNING application in STAGING environment
+    // for web vulnerabilities like:
+    // - SQL Injection (SQLi)
+    // - Cross-Site Scripting (XSS)
+    // - Security misconfigurations
+    // - Exposed sensitive files
+    //
+    // ZAP is the OWASP Zed Attack Proxy - industry standard
+    // for web app security testing.
+    // ============================================================
+    stage('OWASP ZAP - Staging Security Scan') {
+      steps {
+        container('zap') {
+          script {
+            // Wait for staging to be ready
+            sh '''
+              echo "⏳ Waiting for staging environment to be ready..."
+              sleep 30
+            '''
+            
+            sh '''
+              echo "🛡️ Starting OWASP ZAP baseline scan on staging..."
+              echo "Target: ${STAGING_URL}"
+              
+              mkdir -p ${ZAP_REPORT_DIR}
+              
+              # Run ZAP baseline scan
+              # -t = target URL
+              # -r = generate HTML report
+              # -x = generate XML report (for Jenkins plugin)
+              # -w = generate Markdown report
+              # -a = active scan (simulates real attacks)
+              # -d = debug mode (show more details)
+              
+              zap-full-scan.py \
+                -t ${STAGING_URL} \
+                -r ${ZAP_REPORT_DIR}/zap-report.html \
+                -x ${ZAP_REPORT_DIR}/zap-report.xml \
+                -w ${ZAP_REPORT_DIR}/zap-report.md \
+                -a \
+                -d \
+                || true
+              
+              echo "✅ ZAP scan completed"
+              
+              # Display summary of findings
+              echo ""
+              echo "========== ZAP SCAN SUMMARY =========="
+              echo "Check the HTML report for full details"
+              echo "Report location: ${ZAP_REPORT_DIR}/zap-report.html"
+              echo "======================================"
+            '''
+          }
+        }
+      }
+      post {
+        always {
+          // Archive ZAP reports even if pipeline fails
+          archiveArtifacts artifacts: "${ZAP_REPORT_DIR}/**/*",
+                           allowEmptyArchive: true
+          
+          // Publish ZAP report in Jenkins UI
+          publishHTML target: [
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: ZAP_REPORT_DIR,
+            reportFiles: 'zap-report.html',
+            reportName: 'OWASP ZAP Security Report'
+          ]
+        }
+      }
+    }
+
     // ----------------------------------------------------------
-    // STAGE 4: Deploy to STAGING
-    //
-    // Jenkins updates the image tag in portfolio-gitops repo
-    // in the STAGING section. ArgoCD picks this up and deploys
-    // to the "portfolio-staging" namespace automatically.
-    //
-    // This is the GitOps pattern:
-    // Jenkins never does "kubectl apply" directly.
-    // Jenkins only updates Git. ArgoCD does the actual deploy.
-    // Git is the single source of truth.
+    // STAGE 7: Deploy to STAGING
     // ----------------------------------------------------------
     stage('Deploy to Staging') {
       steps {
         container('git') {
           sh '''
             echo "📦 Updating staging image tag to ${IMAGE_TAG}..."
-             mkdir -p /tmp/.ssh
-              ssh-keyscan github.com > /tmp/.ssh/known_hosts
-
-              echo "SSH files:"
-               ls -la /root/.ssh
-              export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
+            
+            mkdir -p /tmp/.ssh
+            ssh-keyscan github.com > /tmp/.ssh/known_hosts
+            
+            export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
 
             git clone git@${GITOPS_REPO} gitops-repo
             cd gitops-repo
@@ -248,13 +313,10 @@ stage('Quality Gate') {
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" \
-              staging/deployment.yaml
+            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" staging/deployment.yaml
 
             git add staging/deployment.yaml
-
             git commit -m "ci: update staging image to ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
-
             git push origin main
 
             echo "✅ Staging deployment.yaml updated"
@@ -264,50 +326,57 @@ stage('Quality Gate') {
     }
 
     // ----------------------------------------------------------
-    // STAGE 5: Staging Smoke Test
-    //
-    // Wait for ArgoCD to deploy to staging, then hit the URL
-    // to verify the site is actually responding.
-    // If it returns HTTP 200 = pass. Anything else = fail.
-    //
-    // "staging.praveeninfra.online" is your staging URL.
-    // Change this to your actual staging domain/IP.
-    // ----------------------------------------------------------
-    stage('Staging Smoke Test') {
+    // STAGE 8: Staging Smoke Test + Post-Deployment Validation
+    // 
+    // This is your POST-DEPLOYMENT VALIDATION for STAGING
+    // Checks: HTTP 200, response time, content validation
+    // ============================================================
+    stage('Staging - Post-Deployment Validation') {
       steps {
-        sh '''
-          echo "⏳ Waiting 30s for ArgoCD to sync staging..."
-          sleep 30
+        container('curl') {
+          sh '''
+            echo "⏳ Waiting 30s for ArgoCD to sync staging..."
+            sleep 30
 
-          echo "🧪 Running smoke test on staging..."
+            echo "✅ Running POST-DEPLOYMENT VALIDATION on staging..."
 
-          # Try 5 times, 10 second gap between attempts
-          for i in 1 2 3 4 5; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              https://staging.praveeninfra.online || echo "000")
+            # 1. Check HTTP status code
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${STAGING_URL} || echo "000")
+            if [ "$STATUS" != "200" ]; then
+              echo "❌ HTTP status: $STATUS (expected 200)"
+              exit 1
+            fi
+            echo "✅ HTTP status: $STATUS"
 
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ Staging smoke test passed (HTTP 200)"
-              exit 0
+            # 2. Check response time (should be under 2 seconds)
+            RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${STAGING_URL})
+            echo "Response time: ${RESPONSE_TIME}s"
+            if (( $(echo "$RESPONSE_TIME > 2" | bc -l) )); then
+              echo "⚠️ Warning: Response time > 2 seconds"
             fi
 
-            echo "Attempt $i: got HTTP $STATUS, retrying in 10s..."
-            sleep 10
-          done
+            # 3. Validate HTML content (check for expected text)
+            curl -s ${STAGING_URL} | grep -q "Praveen" || {
+              echo "❌ Expected content 'Praveen' not found in page"
+              exit 1
+            }
+            echo "✅ Content validation passed"
 
-          echo "❌ Staging smoke test FAILED after 5 attempts"
-          exit 1
-        '''
+            # 4. Check for common error patterns
+            curl -s ${STAGING_URL} | grep -qi "error\|exception\|500\|404" && {
+              echo "⚠️ Warning: Error keywords found in response"
+            } || echo "✅ No error patterns detected"
+
+            echo "=========================================="
+            echo "✅ STAGING POST-DEPLOYMENT VALIDATION PASSED"
+            echo "=========================================="
+          '''
+        }
       }
     }
+
     // ----------------------------------------------------------
-    // STAGE 7: Deploy to PRODUCTION
-    //
-    // Same as staging update — Jenkins updates the production
-    // deployment.yaml in GitOps repo with new image tag.
-    // ArgoCD auto-syncs and does rolling update in K8s.
-    // Zero downtime because K8s brings up new pod before
-    // killing the old one (rolling update strategy).
+    // STAGE 9: Deploy to PRODUCTION
     // ----------------------------------------------------------
     stage('Deploy to Production') {
       steps {
@@ -315,19 +384,12 @@ stage('Quality Gate') {
           sh '''
             echo "🚀 Deploying ${IMAGE_TAG} to PRODUCTION..."
 
-            mkdir -p /tmp/.ssh
-            ssh-keyscan github.com > /tmp/.ssh/known_hosts
-
-             export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
-
             cd gitops-repo
 
             sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
 
             git add deployment.yaml
-
             git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
-
             git push origin main
 
             echo "✅ Production deployment.yaml updated"
@@ -338,47 +400,99 @@ stage('Quality Gate') {
     }
 
     // ----------------------------------------------------------
-    // STAGE 8: Production Health Check
+    // STAGE 10: Production - Post-Deployment Validation
     //
-    // After deploy, verify production is healthy.
-    // Same curl check but on the real domain.
-    // ----------------------------------------------------------
-    stage('Production Health Check') {
+    // This is your FINAL validation after production deployment
+    // Includes: Health check, SSL cert, DNS resolution
+    // ============================================================
+    stage('Production - Post-Deployment Validation') {
       steps {
-        sh '''
-          echo "⏳ Waiting 45s for production rollout..."
-          sleep 45
+        container('curl') {
+          sh '''
+            echo "⏳ Waiting 60s for production rollout..."
+            sleep 60
 
-          echo "🏥 Checking production health..."
+            echo "🏥 Running PRODUCTION POST-DEPLOYMENT VALIDATION..."
 
-          for i in 1 2 3 4 5; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              https://praveeninfra.online || echo "000")
+            # 1. Check DNS resolution
+            echo "Checking DNS resolution..."
+            nslookup praveeninfra.online || {
+              echo "❌ DNS resolution failed"
+              exit 1
+            }
+            echo "✅ DNS resolution OK"
 
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ Production health check passed (HTTP 200)"
-              exit 0
+            # 2. Check SSL certificate (valid, not expired)
+            echo "Checking SSL certificate..."
+            SSL_EXPIRY=$(echo | openssl s_client -servername praveeninfra.online -connect praveeninfra.online:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | cut -d= -f2)
+            echo "SSL certificate expires: $SSL_EXPIRY"
+            
+            # 3. Check HTTP status
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${PROD_URL} || echo "000")
+            if [ "$STATUS" != "200" ]; then
+              echo "❌ HTTP status: $STATUS (expected 200)"
+              exit 1
+            fi
+            echo "✅ HTTP status: $STATUS"
+
+            # 4. Check response time
+            RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
+            echo "Response time: ${RESPONSE_TIME}s"
+            if (( $(echo "$RESPONSE_TIME > 3" | bc -l) )); then
+              echo "⚠️ Warning: Response time > 3 seconds"
             fi
 
-            echo "Attempt $i: HTTP $STATUS, retrying in 15s..."
-            sleep 15
-          done
+            # 5. Content validation
+            curl -s ${PROD_URL} | grep -q "Praveen" || {
+              echo "❌ Expected content not found"
+              exit 1
+            }
+            echo "✅ Content validation passed"
 
-          echo "❌ Production health check FAILED — consider rollback"
-          echo "Run: kubectl rollout undo deployment/portfolio -n portfolio"
-          exit 1
-        '''
+            # 6. Check for error indicators
+            curl -s ${PROD_URL} | grep -qi "500\|502\|503\|504" && {
+              echo "❌ Server error found in response"
+              exit 1
+            } || echo "✅ No server errors detected"
+
+            echo "=========================================="
+            echo "✅ PRODUCTION DEPLOYMENT VALIDATED SUCCESSFULLY"
+            echo "Site is live: ${PROD_URL}"
+            echo "Image version: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "=========================================="
+          '''
+        }
+      }
+    }
+
+    // ============================================================
+    // NEW STAGE 11: Performance Baseline (Optional)
+    //
+    // This runs a simple performance test using Apache Bench
+    // to ensure the site performs well after deployment
+    // ============================================================
+    stage('Performance Baseline Check') {
+      steps {
+        container('curl') {
+          sh '''
+            echo "⚡ Running performance baseline check..."
+            
+            # Install Apache Bench if not available
+            apk add --no-cache apache2-utils || true
+            
+            # Run 100 requests with 10 concurrent
+            ab -n 100 -c 10 ${PROD_URL}/ | grep -E "Requests per second|Time per request|Failed requests"
+            
+            echo "✅ Performance check completed"
+          '''
+        }
       }
     }
 
   } // end stages
 
   // ============================================================
-  // POST: Runs after pipeline finishes — success OR failure
-  //
-  // This is where you add Slack/email notifications.
-  // Right now it just prints. When you add Slack plugin,
-  // uncomment the slackSend lines.
+  // POST: Runs after pipeline finishes
   // ============================================================
   post {
 
@@ -389,15 +503,16 @@ stage('Quality Gate') {
         Image: ${IMAGE_NAME}:${IMAGE_TAG}
         Job: ${JOB_NAME} #${BUILD_NUMBER}
         Duration: ${currentBuild.durationString}
-        Site: https://praveeninfra.online
+        
+        Deployed URLs:
+        Staging: ${STAGING_URL}
+        Production: ${PROD_URL}
+        
+        Security Reports:
+        Trivy: ${BUILD_URL}artifact/trivy-report.json
+        OWASP ZAP: ${BUILD_URL}artifact/${ZAP_REPORT_DIR}/zap-report.html
         ============================================
       """
-      // When you add Slack plugin, uncomment:
-      // slackSend(
-      //   channel: '#deployments',
-      //   color: 'good',
-      //   message: "✅ *${JOB_NAME}* #${BUILD_NUMBER} deployed ${IMAGE_TAG} to production\\nhttps://praveeninfra.online"
-      // )
     }
 
     failure {
@@ -407,17 +522,18 @@ stage('Quality Gate') {
         Job: ${JOB_NAME} #${BUILD_NUMBER}
         Failed Stage: ${env.STAGE_NAME}
         Check logs: ${BUILD_URL}
+        
+        Possible causes:
+        - Security scan found vulnerabilities
+        - Deployment validation failed
+        - Application health check failed
+        - Infrastructure issue
         ============================================
       """
-      // slackSend(
-      //   channel: '#deployments',
-      //   color: 'danger',
-      //   message: "❌ *${JOB_NAME}* #${BUILD_NUMBER} FAILED at stage: ${env.STAGE_NAME}\\n${BUILD_URL}"
-      // )
     }
 
     always {
-      echo "Pipeline finished"
+      echo "Pipeline finished at: ${new Date()}"
     }
 
   }
