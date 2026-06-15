@@ -48,9 +48,9 @@ spec:
     command: ["cat"]
     tty: true
 
-  # --- OWASP ZAP container for security scanning
+  # --- FIXED: OWASP ZAP container with correct image
   - name: zap
-    image: owasp/zap2docker-stable:latest
+    image: zaproxy/zap-stable:latest
     command: ["sh"]
     args: ["-c", "sleep 999999"]
     tty: true
@@ -214,7 +214,7 @@ spec:
     }
 
     // ----------------------------------------------------------
-    // STAGE 6: OWASP ZAP Baseline Scan
+    // STAGE 6: OWASP ZAP Baseline Scan (FIXED COMMANDS)
     // ----------------------------------------------------------
     stage('OWASP ZAP - Staging Security Scan') {
       steps {
@@ -228,13 +228,13 @@ spec:
             
             mkdir -p ${ZAP_REPORT_DIR}
             
-            zap-full-scan.py \
+            # FIXED: Correct ZAP command using zap-baseline.py
+            zap-baseline.py \
               -t ${STAGING_URL} \
               -r ${ZAP_REPORT_DIR}/zap-report.html \
               -x ${ZAP_REPORT_DIR}/zap-report.xml \
               -w ${ZAP_REPORT_DIR}/zap-report.md \
-              -a \
-              -d \
+              -J ${ZAP_REPORT_DIR}/zap-report.json \
               || true
             
             echo "✅ ZAP scan completed"
@@ -288,7 +288,7 @@ spec:
     }
 
     // ----------------------------------------------------------
-    // STAGE 8: Staging Smoke Test + Post-Deployment Validation
+    // STAGE 8: Staging Post-Deployment Validation
     // ----------------------------------------------------------
     stage('Staging - Post-Deployment Validation') {
       steps {
@@ -318,7 +318,7 @@ spec:
             }
             echo "✅ Content validation passed"
 
-            # 4. Check for error patterns (FIXED: no backslash inside string)
+            # 4. Check for error patterns
             if curl -s ${STAGING_URL} | grep -qi "error"; then
               echo "⚠️ Warning: 'error' keyword found in response"
             else
@@ -358,7 +358,7 @@ spec:
     }
 
     // ----------------------------------------------------------
-    // STAGE 10: Production - Post-Deployment Validation
+    // STAGE 10: Production Post-Deployment Validation
     // ----------------------------------------------------------
     stage('Production - Post-Deployment Validation') {
       steps {
@@ -388,7 +388,7 @@ spec:
             }
             echo "✅ Content validation passed"
 
-            # 4. Check for server errors (FIXED: no backslash)
+            # 4. Check for server errors
             if curl -s ${PROD_URL} | grep -qi "500"; then
               echo "❌ Server error 500 found in response"
               exit 1
