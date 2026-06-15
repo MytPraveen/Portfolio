@@ -471,9 +471,9 @@ spec:
               AVG=$(echo "scale=3; $TOTAL / $COUNT" | bc 2>/dev/null || echo "0")
               echo "Average response time: ${AVG}s"
               
-              if (( $(echo "$AVG < 1" | bc -l 2>/dev/null || echo 0) )); then
+              if [ "$(echo "$AVG < 1" | bc 2>/dev/null)" = "1" ]; then
                 echo "✅ Excellent performance (< 1s)"
-              elif (( $(echo "$AVG < 2" | bc -l 2>/dev/null || echo 0) )); then
+              elif [ "$(echo "$AVG < 2" | bc 2>/dev/null)" = "1" ]; then
                 echo "✅ Good performance (< 2s)"
               else
                 echo "⚠️  Performance warning: average > 2s"
