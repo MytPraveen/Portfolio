@@ -106,9 +106,9 @@ RUN echo 'server { \
 }' > /etc/nginx/conf.d/default.conf
 
 # ============================================================
-# CREATE NON-ROOT USER (Security best practice)
+# CREATE NON-ROOT USER (FIXED - use GID 1010 instead of 101)
 # ============================================================
-RUN addgroup -g 101 -S appgroup && adduser -u 101 -S appuser -G appgroup
+RUN addgroup -g 1010 -S appgroup && adduser -u 1010 -S appuser -G appgroup
 
 # ============================================================
 # SET PROPER OWNERSHIP
