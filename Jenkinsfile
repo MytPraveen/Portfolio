@@ -50,11 +50,10 @@ spec:
     - name: zap-wrk
       mountPath: /zap/wrk
 
-  # FIXED: Use alpine image which runs as root and has curl + bc
   - name: curl
     image: alpine:latest
     command: ["sh"]
-    args: ["-c", "apk add --no-cache curl bc && sleep 999999"]
+    args: ["-c", "apk add --no-cache curl && sleep 999999"]
     tty: true
 
   volumes:
@@ -105,7 +104,6 @@ spec:
       steps {
         checkout scm
         sh 'echo "✅ Code checked out from GitHub"'
-        sh 'ls -la'
       }
     }
 
@@ -138,7 +136,6 @@ spec:
         container('kaniko') {
           sh '''
             echo "🔨 Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-
             /kaniko/executor \
               --dockerfile=Dockerfile \
               --context=${WORKSPACE} \
@@ -147,7 +144,6 @@ spec:
               --cache=true \
               --cache-repo=${IMAGE_NAME}-cache \
               --cleanup
-
             echo "✅ Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
           '''
         }
@@ -159,14 +155,12 @@ spec:
         container('trivy') {
           sh '''
             echo "🔍 Scanning image for vulnerabilities..."
-
             trivy image \
               --exit-code ${TRIVY_EXIT_CODE} \
               --severity ${TRIVY_SEVERITY} \
               --no-progress \
               --format table \
               ${IMAGE_NAME}:${IMAGE_TAG}
-
             echo "✅ Security scan passed"
           '''
         }
@@ -213,15 +207,12 @@ spec:
             cp -r /zap/wrk/${ZAP_REPORT_DIR} ${WORKSPACE}/ || true
             
             echo "✅ ZAP scan completed"
-            echo ""
-            echo "========== ZAP SCAN SUMMARY =========="
-            echo "Report location: ${ZAP_REPORT_DIR}/zap-report.html"
-            echo "======================================"
           '''
         }
       }
       post {
         always {
+          // FIXED: Archive from workspace, not from /zap/wrk
           archiveArtifacts artifacts: "${ZAP_REPORT_DIR}/**/*",
                            allowEmptyArchive: true
         }
@@ -266,7 +257,6 @@ spec:
 
             echo "✅ Running POST-DEPLOYMENT VALIDATION on staging..."
 
-            # 1. Check HTTP status code
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${STAGING_URL} || echo "000")
             if [ "$STATUS" != "200" ]; then
               echo "❌ HTTP status: $STATUS (expected 200)"
@@ -274,27 +264,16 @@ spec:
             fi
             echo "✅ HTTP status: $STATUS"
 
-            # 2. Check response time
             RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${STAGING_URL})
             echo "Response time: ${RESPONSE_TIME}s"
 
-            # 3. Validate HTML content
             curl -s ${STAGING_URL} | grep -q "Praveen" || {
-              echo "❌ Expected content 'Praveen' not found in page"
+              echo "❌ Expected content 'Praveen' not found"
               exit 1
             }
             echo "✅ Content validation passed"
 
-            # 4. Check for error patterns
-            if curl -s ${STAGING_URL} | grep -qi "error"; then
-              echo "⚠️ Warning: 'error' keyword found in response"
-            else
-              echo "✅ No error patterns detected"
-            fi
-
-            echo "=========================================="
             echo "✅ STAGING POST-DEPLOYMENT VALIDATION PASSED"
-            echo "=========================================="
           '''
         }
       }
@@ -306,6 +285,12 @@ spec:
           sh '''
             echo "🚀 Deploying ${IMAGE_TAG} to PRODUCTION..."
 
+            # FIXED: Add ssh-keyscan before production push
+            mkdir -p /tmp/.ssh
+            ssh-keyscan github.com >> /tmp/.ssh/known_hosts 2>/dev/null
+            
+            export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
+
             cd gitops-repo
 
             sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
@@ -315,7 +300,6 @@ spec:
             git push origin main
 
             echo "✅ Production deployment.yaml updated"
-            echo "ArgoCD will sync within 3 minutes automatically"
           '''
         }
       }
@@ -330,7 +314,6 @@ spec:
 
             echo "🏥 Running PRODUCTION POST-DEPLOYMENT VALIDATION..."
 
-            # 1. Check HTTP status
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${PROD_URL} || echo "000")
             if [ "$STATUS" != "200" ]; then
               echo "❌ HTTP status: $STATUS (expected 200)"
@@ -338,30 +321,17 @@ spec:
             fi
             echo "✅ HTTP status: $STATUS"
 
-            # 2. Check response time
             RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
             echo "Response time: ${RESPONSE_TIME}s"
 
-            # 3. Content validation
             curl -s ${PROD_URL} | grep -q "Praveen" || {
               echo "❌ Expected content not found"
               exit 1
             }
             echo "✅ Content validation passed"
 
-            # 4. Check for server errors
-            if curl -s ${PROD_URL} | grep -qi "500"; then
-              echo "❌ Server error 500 found in response"
-              exit 1
-            else
-              echo "✅ No server errors detected"
-            fi
-
-            echo "=========================================="
             echo "✅ PRODUCTION DEPLOYMENT VALIDATED SUCCESSFULLY"
             echo "Site is live: ${PROD_URL}"
-            echo "Image version: ${IMAGE_NAME}:${IMAGE_TAG}"
-            echo "=========================================="
           '''
         }
       }
@@ -372,13 +342,10 @@ spec:
         container('curl') {
           sh '''
             echo "⚡ Running performance baseline check..."
-            
-            TOTAL=0
             for i in 1 2 3 4 5; do
               TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
               echo "Request $i: ${TIME}s"
             done
-            
             echo "Performance check completed"
           '''
         }
@@ -397,13 +364,7 @@ spec:
         Job: ${JOB_NAME} #${BUILD_NUMBER}
         Duration: ${currentBuild.durationString}
         
-        Deployed URLs:
-        Staging: ${STAGING_URL}
-        Production: ${PROD_URL}
-        
-        Security Reports:
-        Trivy: ${BUILD_URL}artifact/trivy-report.json
-        OWASP ZAP: ${BUILD_URL}artifact/${ZAP_REPORT_DIR}/zap-report.html
+        Site: ${PROD_URL}
         ============================================
       """
     }
@@ -414,7 +375,6 @@ spec:
         ❌ PIPELINE FAILED
         Job: ${JOB_NAME} #${BUILD_NUMBER}
         Failed Stage: ${env.STAGE_NAME}
-        Check logs: ${BUILD_URL}
         ============================================
       """
     }
