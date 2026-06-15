@@ -29,8 +29,11 @@ spec:
   - name: git
     image: alpine/git:latest
     command: [sh]
-    args: ["-c", "sleep 999999"]
+    args: ["-c", "apk add --no-cache openssh && sleep 999999"]
     tty: true
+    env:
+    - name: GIT_SSH_COMMAND
+      value: "ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_ed25519"
     volumeMounts:
     - name: github-ssh
       mountPath: /root/.ssh
@@ -104,6 +107,14 @@ spec:
       steps {
         checkout scm
         sh 'echo "✅ Code checked out from GitHub"'
+        
+        // Get Git commit ID (short version - 7 characters)
+        script {
+          GIT_COMMIT_SHORT = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+          env.GIT_COMMIT = GIT_COMMIT_SHORT
+          echo "📝 Git Commit ID: ${env.GIT_COMMIT}"
+          echo "📝 Full Build Tag: ${env.IMAGE_TAG}-${env.GIT_COMMIT}"
+        }
       }
     }
 
@@ -135,16 +146,29 @@ spec:
       steps {
         container('kaniko') {
           sh '''
-            echo "🔨 Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "🔨 Building Docker image: ${IMAGE_NAME}"
+            echo "📦 Tags to push:"
+            echo "   - ${IMAGE_TAG} (v33, v34, etc.)"
+            echo "   - ${GIT_COMMIT} (Git commit ID)"
+            echo "   - ${IMAGE_TAG}-${GIT_COMMIT} (Combined - RECOMMENDED)"
+            echo "   - latest"
+            
             /kaniko/executor \
               --dockerfile=Dockerfile \
               --context=${WORKSPACE} \
               --destination=${IMAGE_NAME}:${IMAGE_TAG} \
+              --destination=${IMAGE_NAME}:${GIT_COMMIT} \
+              --destination=${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT} \
               --destination=${IMAGE_NAME}:latest \
               --cache=true \
               --cache-repo=${IMAGE_NAME}-cache \
               --cleanup
-            echo "✅ Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
+            
+            echo "✅ Image pushed successfully with tags:"
+            echo "   🏷️  ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "   🏷️  ${IMAGE_NAME}:${GIT_COMMIT}"
+            echo "   🏷️  ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
+            echo "   🏷️  ${IMAGE_NAME}:latest"
           '''
         }
       }
@@ -203,7 +227,6 @@ spec:
               -J /zap/wrk/${ZAP_REPORT_DIR}/zap-report.json \
               || true
             
-            # Copy reports to workspace
             cp -r /zap/wrk/${ZAP_REPORT_DIR} ${WORKSPACE}/ || true
             
             echo "✅ ZAP scan completed"
@@ -212,7 +235,6 @@ spec:
       }
       post {
         always {
-          // FIXED: Archive from workspace, not from /zap/wrk
           archiveArtifacts artifacts: "${ZAP_REPORT_DIR}/**/*",
                            allowEmptyArchive: true
         }
@@ -223,10 +245,10 @@ spec:
       steps {
         container('git') {
           sh '''
-            echo "📦 Updating staging image tag to ${IMAGE_TAG}..."
+            echo "📦 Updating staging image tag to ${IMAGE_TAG}-${GIT_COMMIT}..."
             
             mkdir -p /tmp/.ssh
-            ssh-keyscan github.com > /tmp/.ssh/known_hosts
+            ssh-keyscan github.com > /tmp/.ssh/known_hosts 2>/dev/null
             
             export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
 
@@ -236,13 +258,14 @@ spec:
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" staging/deployment.yaml
+            # Update with combined tag (v33-abc1234 format)
+            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" staging/deployment.yaml
 
             git add staging/deployment.yaml
-            git commit -m "ci: update staging image to ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
+            git commit -m "ci: update staging to ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
             git push origin main
 
-            echo "✅ Staging deployment.yaml updated"
+            echo "✅ Staging deployment.yaml updated with image: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
           '''
         }
       }
@@ -283,9 +306,8 @@ spec:
       steps {
         container('git') {
           sh '''
-            echo "🚀 Deploying ${IMAGE_TAG} to PRODUCTION..."
+            echo "🚀 Deploying ${IMAGE_TAG}-${GIT_COMMIT} to PRODUCTION..."
 
-            # FIXED: Add ssh-keyscan before production push
             mkdir -p /tmp/.ssh
             ssh-keyscan github.com >> /tmp/.ssh/known_hosts 2>/dev/null
             
@@ -293,13 +315,14 @@ spec:
 
             cd gitops-repo
 
-            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
+            # Update with combined tag (v33-abc1234 format)
+            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" deployment.yaml
 
             git add deployment.yaml
-            git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG} [build #${BUILD_NUMBER}]" || true
+            git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
             git push origin main
 
-            echo "✅ Production deployment.yaml updated"
+            echo "✅ Production deployment.yaml updated with image: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
           '''
         }
       }
@@ -360,7 +383,9 @@ spec:
       echo """
         ============================================
         ✅ PIPELINE SUCCESS
-        Image: ${IMAGE_NAME}:${IMAGE_TAG}
+        Image: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}
+        Version: ${IMAGE_TAG}
+        Commit: ${GIT_COMMIT}
         Job: ${JOB_NAME} #${BUILD_NUMBER}
         Duration: ${currentBuild.durationString}
         
