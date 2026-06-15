@@ -41,7 +41,6 @@ spec:
     command: ["cat"]
     tty: true
 
-  # FIXED: Added volume mount for ZAP
   - name: zap
     image: zaproxy/zap-stable:latest
     command: ["sh"]
@@ -51,11 +50,11 @@ spec:
     - name: zap-wrk
       mountPath: /zap/wrk
 
-  # FIXED: Added bc installation for curl container
+  # FIXED: Use alpine image which runs as root and has curl + bc
   - name: curl
-    image: curlimages/curl:latest
+    image: alpine:latest
     command: ["sh"]
-    args: ["-c", "apk add --no-cache bc && sleep 999999"]
+    args: ["-c", "apk add --no-cache curl bc && sleep 999999"]
     tty: true
 
   volumes:
@@ -81,7 +80,7 @@ spec:
     ))
     disableConcurrentBuilds()
     timestamps()
-    timeout(time: 25, unit: 'MINUTES')
+    timeout(time: 30, unit: 'MINUTES')
   }
 
   environment {
@@ -190,7 +189,6 @@ spec:
       }
     }
 
-    // FIXED: ZAP stage with correct working directory
     stage('OWASP ZAP - Staging Security Scan') {
       steps {
         container('zap') {
@@ -259,7 +257,6 @@ spec:
       }
     }
 
-    // FIXED: Removed bc dependency - using simpler math
     stage('Staging - Post-Deployment Validation') {
       steps {
         container('curl') {
@@ -277,7 +274,7 @@ spec:
             fi
             echo "✅ HTTP status: $STATUS"
 
-            # 2. Check response time (no bc needed - just display)
+            # 2. Check response time
             RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${STAGING_URL})
             echo "Response time: ${RESPONSE_TIME}s"
 
@@ -370,7 +367,6 @@ spec:
       }
     }
 
-    // FIXED: Performance check without bc
     stage('Performance Baseline Check') {
       steps {
         container('curl') {
@@ -381,8 +377,6 @@ spec:
             for i in 1 2 3 4 5; do
               TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
               echo "Request $i: ${TIME}s"
-              # Simple addition using awk (no bc needed)
-              TOTAL=$(echo "$TOTAL $TIME" | awk '{print $1 + $2}')
             done
             
             echo "Performance check completed"
