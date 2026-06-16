@@ -1,5 +1,5 @@
 # ============================================================
-# STAGE 1: BUILDER - For build-time optimizations
+# STAGE 1: BUILDER
 # ============================================================
 FROM alpine:latest AS builder
 
@@ -10,7 +10,7 @@ WORKDIR /build
 COPY index.html blog.html /build/
 
 # ============================================================
-# STAGE 2: FINAL - Production image
+# STAGE 2: PRODUCTION
 # ============================================================
 FROM nginx:stable-alpine
 
@@ -21,8 +21,6 @@ LABEL maintainer="Praveen B"
 LABEL description="DevOps Portfolio Website"
 LABEL version="1.0"
 LABEL org.opencontainers.image.source="https://github.com/MytPraveen/Portfolio"
-LABEL org.opencontainers.image.title="devops-portfolio"
-LABEL org.opencontainers.image.description="Personal DevOps portfolio website with security hardening"
 
 # ============================================================
 # SECURITY UPDATES
@@ -31,7 +29,7 @@ RUN apk update && apk upgrade && rm -rf /var/cache/apk/* \
     && apk add --no-cache wget curl
 
 # ============================================================
-# REMOVE DEFAULT NGINX FILES
+# REMOVE DEFAULT FILES
 # ============================================================
 RUN rm -rf /usr/share/nginx/html/* \
     && rm -f /etc/nginx/conf.d/default.conf
@@ -50,86 +48,100 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # ============================================================
-# NGINX CONFIGURATION
+# CREATE NON ROOT USER
 # ============================================================
-RUN echo 'server { \
-    listen 80; \
-    server_name _; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    \
-    add_header X-Frame-Options "SAMEORIGIN" always; \
-    add_header X-Content-Type-Options "nosniff" always; \
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; \
-    add_header X-XSS-Protection "1; mode=block" always; \
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always; \
-    add_header Content-Security-Policy "default-src '\''self'\''; script-src '\''self'\'' '\''unsafe-inline'\'' https://fonts.googleapis.com; style-src '\''self'\'' '\''unsafe-inline'\'' https://fonts.googleapis.com; font-src '\''self'\'' https://fonts.gstatic.com; img-src '\''self'\'' data:; connect-src '\''self'\'' https://api.praveeninfra.online; frame-ancestors '\''none'\'';" always; \
-    add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()" always; \
-    \
-    server_tokens off; \
-    client_max_body_size 10M; \
-    \
-    location / { \
-        try_files $uri $uri/ =404; \
-    } \
-    \
-    location ~ /\. { \
-        deny all; \
-        access_log off; \
-        log_not_found off; \
-    } \
-    \
-    location ~* \.(pdf|jpg|jpeg|png|gif|ico|css|js|svg|webp)$ { \
-        expires 30d; \
-        add_header Cache-Control "public, immutable"; \
-        access_log off; \
-    } \
-    \
-    location /health { \
-        access_log off; \
-        return 200 "healthy\n"; \
-        add_header Content-Type text/plain; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+RUN addgroup -g 1010 -S appgroup \
+    && adduser -u 1010 -S appuser -G appgroup
 
 # ============================================================
-# CREATE NON-ROOT USER
+# CREATE REQUIRED DIRECTORIES
 # ============================================================
-RUN addgroup -g 1010 -S appgroup && \
-    adduser -u 1010 -S appuser -G appgroup
+RUN mkdir -p /tmp/nginx \
+    /var/cache/nginx/client_temp \
+    /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp \
+    /var/cache/nginx/uwsgi_temp \
+    /var/cache/nginx/scgi_temp
 
 # ============================================================
-# PERMISSIONS
+# OWNERSHIP
 # ============================================================
 RUN chown -R appuser:appgroup \
     /usr/share/nginx/html \
     /var/cache/nginx \
     /var/log/nginx \
-    /etc/nginx/conf.d
+    /etc/nginx/conf.d \
+    /tmp/nginx
 
 # ============================================================
-# RUN NGINX AS NON-ROOT
+# NGINX CONFIG
 # ============================================================
-RUN sed -i '/^user/d' /etc/nginx/nginx.conf && \
-    echo "user appuser;" >> /etc/nginx/nginx.conf
+RUN printf '%s\n' \
+'pid /tmp/nginx/nginx.pid;' \
+'events { worker_connections 1024; }' \
+'http {' \
+'    include /etc/nginx/mime.types;' \
+'    default_type application/octet-stream;' \
+'    sendfile on;' \
+'    server_tokens off;' \
+'' \
+'    limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;' \
+'' \
+'    server {' \
+'        listen 8080;' \
+'        server_name _;' \
+'' \
+'        root /usr/share/nginx/html;' \
+'        index index.html;' \
+'' \
+'        add_header X-Frame-Options "SAMEORIGIN" always;' \
+'        add_header X-Content-Type-Options "nosniff" always;' \
+'        add_header X-XSS-Protection "1; mode=block" always;' \
+'        add_header Referrer-Policy "strict-origin-when-cross-origin" always;' \
+'        add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;' \
+'        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;' \
+'' \
+'        location / {' \
+'            limit_req zone=mylimit burst=20 nodelay;' \
+'            try_files $uri $uri/ /index.html;' \
+'        }' \
+'' \
+'        location /health {' \
+'            access_log off;' \
+'            return 200 "healthy\n";' \
+'            add_header Content-Type text/plain;' \
+'        }' \
+'' \
+'        location ~ /\. {' \
+'            deny all;' \
+'        }' \
+'' \
+'        location ~* \.(pdf|jpg|jpeg|png|gif|ico|css|js|svg|webp)$ {' \
+'            expires 30d;' \
+'            add_header Cache-Control "public, immutable";' \
+'            access_log off;' \
+'        }' \
+'    }' \
+'}' \
+> /etc/nginx/nginx.conf
 
 # ============================================================
-# SWITCH USER
+# RUN AS NON ROOT
 # ============================================================
 USER appuser
 
 # ============================================================
-# PORT
+# EXPOSE NON-PRIVILEGED PORT
 # ============================================================
-EXPOSE 80
+EXPOSE 8080
 
 # ============================================================
 # HEALTHCHECK
 # ============================================================
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
+CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
 
 # ============================================================
-# ENTRYPOINT
+# START NGINX
 # ============================================================
 ENTRYPOINT ["/entrypoint.sh"]
