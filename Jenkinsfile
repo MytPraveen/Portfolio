@@ -82,7 +82,9 @@ spec:
     ))
     disableConcurrentBuilds()
     timestamps()
-    timeout(time: 30, unit: 'MINUTES')
+    // NOTE: overall timeout raised to 45 min because Manual Approval
+    // can sit and wait for you to click "Proceed" in the Jenkins UI.
+    timeout(time: 45, unit: 'MINUTES')
   }
 
   environment {
@@ -92,13 +94,18 @@ spec:
     GIT_USER_NAME = "Jenkins CI"
     GIT_USER_EMAIL= "jenkins@ci.com"
 
-    TRIVY_SEVERITY = "CRITICAL"
+    TRIVY_SEVERITY  = "CRITICAL"
     TRIVY_EXIT_CODE = "1"
 
-    STAGING_URL  = "https://staging.praveeninfra.online"
-    PROD_URL     = "https://praveeninfra.online"
-    
+    STAGING_URL = "https://staging.praveeninfra.online"
+    PROD_URL    = "https://praveeninfra.online"
+
     ZAP_REPORT_DIR = "zap-reports"
+
+    // Placeholder only - put your real Slack Incoming Webhook URL in a
+    // Jenkins credential (Secret text) and reference it via credentials()
+    // in the notification stage below instead of hardcoding it here.
+    SLACK_WEBHOOK_CRED_ID = "slack-webhook-url"
   }
 
   stages {
@@ -106,16 +113,30 @@ spec:
     stage('Checkout Application Source') {
       steps {
         checkout scm
-        sh 'echo "✅ Code checked out from GitHub"'
-        
+        sh 'echo "Code checked out from GitHub"'
+
         script {
           GIT_COMMIT_SHORT = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
-          env.GIT_COMMIT = GIT_COMMIT_SHORT
-          env.BUILD_DATE = sh(script: "date -u +'%Y-%m-%dT%H:%M:%SZ'", returnStdout: true).trim()
-          echo "📝 Git Commit ID: ${env.GIT_COMMIT}"
-          echo "📝 Full Build Tag: ${env.IMAGE_TAG}-${env.GIT_COMMIT}"
-          echo "📝 Build Date: ${env.BUILD_DATE}"
+          env.GIT_COMMIT  = GIT_COMMIT_SHORT
+          env.BUILD_DATE  = sh(script: "date -u +'%Y-%m-%dT%H:%M:%SZ'", returnStdout: true).trim()
+          echo "Git Commit ID: ${env.GIT_COMMIT}"
+          echo "Full Build Tag: ${env.IMAGE_TAG}-${env.GIT_COMMIT}"
+          echo "Build Date: ${env.BUILD_DATE}"
         }
+      }
+    }
+
+    stage('Unit Test') {
+      steps {
+        // This project is a static HTML/FastAPI portfolio site, so there is
+        // no compiled-language unit test suite to run here. In an
+        // enterprise Java/Node project this stage would run
+        // `mvn test` or `npm test` and publish JUnit results.
+        sh '''
+          echo "Unit Test stage placeholder"
+          echo "Skipped: static frontend has no unit test suite"
+          echo "In a Java/Node service this stage would run mvn test / npm test"
+        '''
       }
     }
 
@@ -142,49 +163,94 @@ spec:
       steps {
         script {
           echo "=========================================="
-          echo "📊 Checking SonarQube Quality Gate"
+          echo "Checking SonarQube Quality Gate"
           echo "=========================================="
-          
+
           timeout(time: 5, unit: 'MINUTES') {
             try {
-              def qualityGate = waitForQualityGate abortPipeline: false
-              
+              def qualityGate = waitForQualityGate abortPipeline: true
+
               if (qualityGate.status == 'OK') {
-                echo "✅ Quality Gate: PASSED"
-              } else {
-                echo "⚠️ Quality Gate: FAILED"
-                echo ""
-                echo "📋 Issues detected - please review:"
-                echo "   http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000/dashboard?id=portfolio"
-                echo ""
-                echo "🔧 Pipeline continuing for infrastructure testing"
-                currentBuild.result = 'UNSTABLE'
+                echo "Quality Gate: PASSED"
               }
-            } catch(Exception e) {
-              echo "⚠️ Could not retrieve quality gate status"
-              echo "   Error: ${e.message}"
-              currentBuild.result = 'UNSTABLE'
+            } catch (Exception e) {
+              echo "Quality Gate: FAILED - ${e.message}"
+              error("Stopping pipeline: SonarQube Quality Gate failed")
             }
           }
-          
-          echo "=========================================="
-          echo "Proceeding with build and deployment"
-          echo "=========================================="
         }
       }
     }
 
-    stage('Build & Push Docker Image') {
+    stage('Build Docker Image') {
       steps {
         container('kaniko') {
           sh '''
-            echo "🔨 Building Docker image: ${IMAGE_NAME}"
-            echo "📦 Tags to push:"
-            echo "   - ${IMAGE_TAG} (Version tag)"
-            echo "   - ${GIT_COMMIT} (Git commit ID)"
-            echo "   - ${IMAGE_TAG}-${GIT_COMMIT} (Combined - RECOMMENDED)"
-            echo "   - latest"
-            
+            echo "Building image (no push yet): ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
+
+            /kaniko/executor \
+              --dockerfile=Dockerfile \
+              --context=${WORKSPACE} \
+              --no-push \
+              --tarPath=/workspace/image.tar \
+              --destination=${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT} \
+              --cache=true \
+              --cache-repo=${IMAGE_NAME}-cache \
+              --build-arg BUILD_DATE=${BUILD_DATE} \
+              --build-arg VCS_REF=${GIT_COMMIT}
+
+            echo "Image built and saved as tarball for scanning"
+          '''
+        }
+      }
+    }
+
+    stage('Trivy Scan (Pre-Push Gate)') {
+      // Scanning the tarball BEFORE pushing means a vulnerable image
+      // never reaches Docker Hub. This is the order most real
+      // organizations enforce.
+      steps {
+        container('trivy') {
+          sh '''
+            echo "Scanning local image tarball for CRITICAL vulnerabilities..."
+
+            trivy image \
+              --input /workspace/image.tar \
+              --exit-code ${TRIVY_EXIT_CODE} \
+              --severity ${TRIVY_SEVERITY} \
+              --no-progress \
+              --format table \
+              --timeout 10m
+
+            echo "Trivy gate passed - safe to push"
+          '''
+        }
+      }
+      post {
+        always {
+          container('trivy') {
+            sh '''
+              trivy image \
+                --input /workspace/image.tar \
+                --exit-code 0 \
+                --severity HIGH,CRITICAL \
+                --format json \
+                --output trivy-report.json || true
+            '''
+          }
+          archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Push Docker Image') {
+      // Re-running kaniko with --push (instead of re-using the tarball)
+      // keeps this simple and reliable on a homelab kaniko setup.
+      steps {
+        container('kaniko') {
+          sh '''
+            echo "Trivy gate passed - pushing image to Docker Hub"
+
             /kaniko/executor \
               --dockerfile=Dockerfile \
               --context=${WORKSPACE} \
@@ -197,135 +263,21 @@ spec:
               --cleanup \
               --build-arg BUILD_DATE=${BUILD_DATE} \
               --build-arg VCS_REF=${GIT_COMMIT}
-            
-            echo "✅ Image pushed successfully with all tags"
+
+            echo "Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
           '''
         }
       }
     }
 
-    stage('Security Scan - Trivy') {
-      steps {
-        container('trivy') {
-          sh '''
-            echo "🔍 Scanning image for vulnerabilities..."
-            echo "This scan will FAIL if CRITICAL vulnerabilities found"
-            
-            trivy image \
-              --exit-code ${TRIVY_EXIT_CODE} \
-              --severity ${TRIVY_SEVERITY} \
-              --no-progress \
-              --format table \
-              --timeout 10m \
-              ${IMAGE_NAME}:${IMAGE_TAG}
-            
-            echo "✅ Security scan passed - no critical vulnerabilities"
-          '''
-        }
-      }
-      post {
-        always {
-          container('trivy') {
-            sh '''
-              trivy image \
-                --exit-code 0 \
-                --severity HIGH,CRITICAL \
-                --format json \
-                --output trivy-report.json \
-                ${IMAGE_NAME}:${IMAGE_TAG} || true
-            '''
-          }
-          archiveArtifacts artifacts: 'trivy-report.json',
-                           allowEmptyArchive: true
-        }
-      }
-    }
-
-    stage('OWASP ZAP - Staging Security Scan') {
-      steps {
-        container('zap') {
-          sh '''
-            echo "⏳ Waiting for staging environment to be ready..."
-            sleep 30
-            
-            echo "🛡️ Starting OWASP ZAP baseline scan on staging..."
-            echo "Target: ${STAGING_URL}"
-            
-            mkdir -p /zap/wrk/${ZAP_REPORT_DIR}
-            
-            zap-baseline.py \
-              -t ${STAGING_URL} \
-              -r /zap/wrk/${ZAP_REPORT_DIR}/zap-report.html \
-              -x /zap/wrk/${ZAP_REPORT_DIR}/zap-report.xml \
-              -w /zap/wrk/${ZAP_REPORT_DIR}/zap-report.md \
-              -J /zap/wrk/${ZAP_REPORT_DIR}/zap-report.json \
-              -I || true
-            
-            # Copy reports to workspace
-            cp -r /zap/wrk/${ZAP_REPORT_DIR} ${WORKSPACE}/ 2>/dev/null || true
-            
-            # Create a report file if none was generated
-            if [ ! -f "${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html" ]; then
-              mkdir -p ${WORKSPACE}/${ZAP_REPORT_DIR}
-              echo "<html><head><title>ZAP Scan Report</title></head><body>" > ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
-              echo "<h1>OWASP ZAP Baseline Scan</h1>" >> ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
-              echo "<p>Target: ${STAGING_URL}</p>" >> ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
-              echo "<p>Scan completed: $(date)</p>" >> ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
-              echo "<p>No critical vulnerabilities found.</p>" >> ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
-              echo "</body></html>" >> ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
-            fi
-            
-            echo "✅ ZAP scan completed"
-          '''
-        }
-      }
-      post {
-        always {
-          script {
-            sh "mkdir -p ${ZAP_REPORT_DIR}"
-            archiveArtifacts artifacts: "${ZAP_REPORT_DIR}/**/*",
-                             allowEmptyArchive: true
-          }
-        }
-      }
-    }
-
-    stage('Image Size Check') {
-      steps {
-        container('curl') {
-          sh '''
-            echo "📏 Checking Docker image size..."
-            
-            # Try Docker Hub API
-            SIZE=$(curl -s -X GET https://hub.docker.com/v2/repositories/${IMAGE_NAME}/tags/${IMAGE_TAG} 2>/dev/null | grep -o '"size":[0-9]*' | head -1 | cut -d':' -f2)
-            
-            if [ -n "$SIZE" ] && [ "$SIZE" -gt 0 ]; then
-              SIZE_MB=$((SIZE / 1024 / 1024))
-              echo "Image size: ${SIZE_MB} MB"
-              
-              if [ ${SIZE_MB} -gt 100 ]; then
-                echo "⚠️  WARNING: Image size > 100MB (${SIZE_MB} MB)"
-              else
-                echo "✅ Image size is good (${SIZE_MB} MB)"
-              fi
-            else
-              echo "ℹ️  Could not determine image size from registry"
-              echo "   (This is normal for first build or registry delay)"
-            fi
-          '''
-        }
-      }
-    }
-
-    stage('Deploy to Staging') {
+    stage('Update GitOps Repo - Staging') {
       steps {
         container('git') {
           sh '''
-            echo "📦 Updating staging image tag to ${IMAGE_TAG}-${GIT_COMMIT}..."
-            
+            echo "Updating staging image tag to ${IMAGE_TAG}-${GIT_COMMIT}..."
+
             mkdir -p /tmp/.ssh
             ssh-keyscan github.com > /tmp/.ssh/known_hosts 2>/dev/null
-            
             export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
 
             git clone git@${GITOPS_REPO} gitops-repo
@@ -340,26 +292,23 @@ spec:
             git commit -m "ci: update staging to ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
             git push origin main
 
-            echo "✅ Staging deployment.yaml updated"
-            echo "Image: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
+            echo "staging/deployment.yaml updated - ArgoCD will auto-sync"
           '''
         }
       }
     }
 
-    stage('Staging - Post-Deployment Validation') {
+    stage('Smoke Test - Staging') {
       steps {
         container('curl') {
           sh '''
-            echo "⏳ Waiting 30s for ArgoCD to sync staging..."
+            echo "Waiting 30s for ArgoCD to sync staging..."
             sleep 30
-
-            echo "✅ Running POST-DEPLOYMENT VALIDATION on staging..."
 
             for i in 1 2 3; do
               STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${STAGING_URL} || echo "000")
               if [ "$STATUS" = "200" ]; then
-                echo "✅ HTTP status: $STATUS"
+                echo "HTTP status: $STATUS"
                 break
               fi
               echo "Attempt $i: HTTP $STATUS, retrying in 10s..."
@@ -367,34 +316,77 @@ spec:
             done
 
             if [ "$STATUS" != "200" ]; then
-              echo "❌ HTTP status: $STATUS (expected 200)"
+              echo "Smoke test FAILED - staging not healthy (HTTP $STATUS)"
               exit 1
             fi
 
-            RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${STAGING_URL})
-            echo "Response time: ${RESPONSE_TIME}s"
-
             curl -s ${STAGING_URL} | grep -q "Praveen" || {
-              echo "❌ Expected content 'Praveen' not found"
+              echo "Smoke test FAILED - expected content not found"
               exit 1
             }
-            echo "✅ Content validation passed"
 
-            echo "✅ STAGING POST-DEPLOYMENT VALIDATION PASSED"
+            echo "Smoke test PASSED on staging"
           '''
         }
       }
     }
 
-    stage('Deploy to Production') {
+    stage('OWASP ZAP - Staging Security Scan') {
+      steps {
+        container('zap') {
+          sh '''
+            echo "Starting OWASP ZAP baseline scan on staging..."
+            mkdir -p /zap/wrk/${ZAP_REPORT_DIR}
+
+            zap-baseline.py \
+              -t ${STAGING_URL} \
+              -r /zap/wrk/${ZAP_REPORT_DIR}/zap-report.html \
+              -x /zap/wrk/${ZAP_REPORT_DIR}/zap-report.xml \
+              -w /zap/wrk/${ZAP_REPORT_DIR}/zap-report.md \
+              -J /zap/wrk/${ZAP_REPORT_DIR}/zap-report.json \
+              -I || true
+
+            cp -r /zap/wrk/${ZAP_REPORT_DIR} ${WORKSPACE}/ 2>/dev/null || true
+
+            if [ ! -f "${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html" ]; then
+              mkdir -p ${WORKSPACE}/${ZAP_REPORT_DIR}
+              echo "<html><body><h1>ZAP Scan</h1><p>Target: ${STAGING_URL}</p></body></html>" \
+                > ${WORKSPACE}/${ZAP_REPORT_DIR}/zap-report.html
+            fi
+
+            echo "ZAP scan completed"
+          '''
+        }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: "${ZAP_REPORT_DIR}/**/*", allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Manual Approval - Production') {
+      steps {
+        script {
+          // Pauses the pipeline and waits for a human to click Proceed
+          // in the Jenkins UI (Build page -> "Paused for input").
+          // If nobody approves within 30 minutes, the pipeline aborts.
+          timeout(time: 30, unit: 'MINUTES') {
+            input message: "Deploy ${IMAGE_TAG}-${GIT_COMMIT} to PRODUCTION?",
+                  ok: "Approve & Deploy"
+          }
+        }
+      }
+    }
+
+    stage('Update GitOps Repo - Production') {
       steps {
         container('git') {
           sh '''
-            echo "🚀 Deploying ${IMAGE_TAG}-${GIT_COMMIT} to PRODUCTION..."
+            echo "Deploying ${IMAGE_TAG}-${GIT_COMMIT} to PRODUCTION..."
 
             mkdir -p /tmp/.ssh
             ssh-keyscan github.com >> /tmp/.ssh/known_hosts 2>/dev/null
-            
             export GIT_SSH_COMMAND="ssh -i /root/.ssh/id_ed25519 -o UserKnownHostsFile=/tmp/.ssh/known_hosts"
 
             cd gitops-repo
@@ -405,26 +397,23 @@ spec:
             git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
             git push origin main
 
-            echo "✅ Production deployment.yaml updated"
-            echo "Image: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}"
+            echo "Production deployment.yaml updated - ArgoCD will auto-sync"
           '''
         }
       }
     }
 
-    stage('Production - Post-Deployment Validation') {
+    stage('Production Validation') {
       steps {
         container('curl') {
           sh '''
-            echo "⏳ Waiting 60s for production rollout..."
+            echo "Waiting 60s for production rollout..."
             sleep 60
-
-            echo "🏥 Running PRODUCTION POST-DEPLOYMENT VALIDATION..."
 
             for i in 1 2 3 4 5; do
               STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${PROD_URL} || echo "000")
               if [ "$STATUS" = "200" ]; then
-                echo "✅ HTTP status: $STATUS"
+                echo "HTTP status: $STATUS"
                 break
               fi
               echo "Attempt $i: HTTP $STATUS, retrying in 15s..."
@@ -432,21 +421,17 @@ spec:
             done
 
             if [ "$STATUS" != "200" ]; then
-              echo "❌ HTTP status: $STATUS (expected 200)"
+              echo "Production validation FAILED (HTTP $STATUS)"
+              echo "Rollback: revert the last commit in portfolio-gitops and ArgoCD will auto-sync back"
               exit 1
             fi
 
-            RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
-            echo "Response time: ${RESPONSE_TIME}s"
-
             curl -s ${PROD_URL} | grep -q "Praveen" || {
-              echo "❌ Expected content not found"
+              echo "Production validation FAILED - expected content not found"
               exit 1
             }
-            echo "✅ Content validation passed"
 
-            echo "✅ PRODUCTION DEPLOYMENT VALIDATED SUCCESSFULLY"
-            echo "Site is live: ${PROD_URL}"
+            echo "PRODUCTION VALIDATED - site live at ${PROD_URL}"
           '''
         }
       }
@@ -456,32 +441,33 @@ spec:
       steps {
         container('curl') {
           sh '''
-            echo "⚡ Running performance baseline check..."
-            
+            echo "Running performance baseline check..."
             TOTAL=0
-            COUNT=0
             for i in 1 2 3 4 5; do
               TIME=$(curl -s -o /dev/null -w "%{time_total}" ${PROD_URL})
               echo "Request $i: ${TIME}s"
               TOTAL=$(echo "$TOTAL + $TIME" | bc 2>/dev/null || echo "0")
-              COUNT=$((COUNT + 1))
             done
-            
-            if [ "$COUNT" -gt 0 ]; then
-              AVG=$(echo "scale=3; $TOTAL / $COUNT" | bc 2>/dev/null || echo "0")
-              echo "Average response time: ${AVG}s"
-              
-              if [ "$(echo "$AVG < 1" | bc 2>/dev/null)" = "1" ]; then
-                echo "✅ Excellent performance (< 1s)"
-              elif [ "$(echo "$AVG < 2" | bc 2>/dev/null)" = "1" ]; then
-                echo "✅ Good performance (< 2s)"
-              else
-                echo "⚠️  Performance warning: average > 2s"
-              fi
-            fi
-            
-            echo "Performance check completed"
+            AVG=$(echo "scale=3; $TOTAL / 5" | bc 2>/dev/null || echo "0")
+            echo "Average response time: ${AVG}s"
           '''
+        }
+      }
+    }
+
+    stage('Notify Slack') {
+      steps {
+        container('curl') {
+          // Create a Jenkins credential (Secret text) with ID matching
+          // SLACK_WEBHOOK_CRED_ID, holding your Slack Incoming Webhook URL.
+          // This stage is a no-op placeholder until that credential exists.
+          withCredentials([string(credentialsId: env.SLACK_WEBHOOK_CRED_ID, variable: 'SLACK_WEBHOOK_URL')]) {
+            sh '''
+              curl -s -X POST -H 'Content-type: application/json' \
+                --data "{\\"text\\":\\"✅ Deploy SUCCESS: ${IMAGE_TAG}-${GIT_COMMIT} is live at ${PROD_URL} (build #${BUILD_NUMBER})\\"}" \
+                "$SLACK_WEBHOOK_URL" || echo "Slack notification failed (non-blocking)"
+            '''
+          }
         }
       }
     }
@@ -493,19 +479,12 @@ spec:
     success {
       echo """
         ============================================
-        ✅ PIPELINE SUCCESS
+        PIPELINE SUCCESS
         Image: ${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}
-        Version: ${IMAGE_TAG}
-        Commit: ${GIT_COMMIT}
-        Build Date: ${BUILD_DATE}
-        Job: ${JOB_NAME} #${BUILD_NUMBER}
-        Duration: ${currentBuild.durationString}
-        
+        Build: #${BUILD_NUMBER}   Date: ${env.BUILD_DATE}
         Site: ${PROD_URL}
-        
-        Security Reports:
-        - Trivy: ${BUILD_URL}artifact/trivy-report.json
-        - OWASP ZAP: ${BUILD_URL}artifact/${ZAP_REPORT_DIR}/zap-report.html
+        Trivy report: ${BUILD_URL}artifact/trivy-report.json
+        ZAP report:   ${BUILD_URL}artifact/${ZAP_REPORT_DIR}/zap-report.html
         ============================================
       """
     }
@@ -513,27 +492,16 @@ spec:
     failure {
       echo """
         ============================================
-        ❌ PIPELINE FAILED
+        PIPELINE FAILED
         Job: ${JOB_NAME} #${BUILD_NUMBER}
         Failed Stage: ${env.STAGE_NAME}
-        Check logs: ${BUILD_URL}
+        Logs: ${BUILD_URL}
         ============================================
       """
     }
 
-    unstable {
-      echo """
-        ============================================
-        ⚠️  PIPELINE UNSTABLE
-        Job: ${JOB_NAME} #${BUILD_NUMBER}
-        Quality Gate: FAILED (but infrastructure deployed)
-        
-        Action Required:
-        1. Check SonarQube dashboard
-        2. Fix code quality issues
-        3. Re-run pipeline to clear quality gate
-        ============================================
-      """
+    aborted {
+      echo "Pipeline aborted - likely Manual Approval timed out or was rejected."
     }
 
     always {
