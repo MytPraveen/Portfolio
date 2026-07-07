@@ -20,11 +20,17 @@ spec:
     - name: workspace
       mountPath: /workspace
 
-  - name: trivy
-    image: aquasec/trivy:latest
-    command: [sh]
-    args: ["-c", "sleep 999999"]
-    tty: true
+- name: trivy
+  image: aquasec/trivy:latest
+  command: [sh]
+  args: ["-c", "sleep 999999"]
+  tty: true
+  volumeMounts:
+    - name: workspace
+      mountPath: /workspace
+
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
 
   - name: git
     image: alpine/git:latest
