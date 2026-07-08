@@ -459,24 +459,6 @@ spec:
         }
       }
     }
-
-    stage('Notify Slack') {
-      steps {
-        container('curl') {
-          // Create a Jenkins credential (Secret text) with ID matching
-          // SLACK_WEBHOOK_CRED_ID, holding your Slack Incoming Webhook URL.
-          // This stage is a no-op placeholder until that credential exists.
-          withCredentials([string(credentialsId: env.SLACK_WEBHOOK_CRED_ID, variable: 'SLACK_WEBHOOK_URL')]) {
-            sh '''
-              curl -s -X POST -H 'Content-type: application/json' \
-                --data "{\\"text\\":\\"✅ Deploy SUCCESS: ${IMAGE_TAG}-${GIT_COMMIT} is live at ${PROD_URL} (build #${BUILD_NUMBER})\\"}" \
-                "$SLACK_WEBHOOK_URL" || echo "Slack notification failed (non-blocking)"
-            '''
-          }
-        }
-      }
-    }
-
   }
 
   post {
