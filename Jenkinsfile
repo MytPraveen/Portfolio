@@ -291,7 +291,7 @@ spec:
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" staging/deployment.yaml
+            sed -i 's|praveendevops95/devops-portfolio:.*|praveendevops95/devops-portfolio:'"${IMAGE_TAG}"'|g' staging/frontend/deployment.yaml
 
             git add staging/deployment.yaml
             git commit -m "ci: update staging to ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
@@ -396,7 +396,7 @@ spec:
 
             cd gitops-repo
 
-            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" deployment.yaml
+            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" production/frontend/deployment.yaml
 
             git add deployment.yaml
             git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
