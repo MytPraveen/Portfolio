@@ -293,7 +293,7 @@ spec:
 
             sed -i 's|praveendevops95/devops-portfolio:.*|praveendevops95/devops-portfolio:'"${IMAGE_TAG}"'|g' staging/frontend/deployment.yaml
 
-            git add staging/deployment.yaml
+            git add staging/frontend/deployment.yaml
             git commit -m "ci: update staging to ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
             git push origin main
 
@@ -398,7 +398,7 @@ spec:
 
             sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" production/frontend/deployment.yaml
 
-            git add deployment.yaml
+            git add production/frontend/deployment.yaml
             git commit -m "ci: PRODUCTION deploy ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
             git push origin main
 
