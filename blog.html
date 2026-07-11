@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 /* ── RESET & TOKENS (same as portfolio) ── */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -85,9 +85,8 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
 
 /* BLOG CARD */
-.blog-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:.4s cubic-bezier(.2,.8,.2,1);position:relative;display:flex;flex-direction:column;outline:none;}
+.blog-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:.4s cubic-bezier(.2,.8,.2,1);position:relative;display:flex;flex-direction:column;}
 .blog-card:hover{transform:translateY(-8px);border-color:rgba(0,229,255,.3);box-shadow:0 24px 50px rgba(0,0,0,.4),0 0 30px rgba(0,229,255,.07);}
-.blog-card:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.2);}
 .blog-cover{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface2);}
 .blog-cover-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(124,58,237,.05));display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
 .blog-card-body{padding:1.5rem;flex:1;display:flex;flex-direction:column;gap:.8rem;}
@@ -121,10 +120,6 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .skel-line.full{width:100%;}
 .skel-title{height:18px;border-radius:6px;width:90%;}
 
-/* SPINNER */
-.spinner{display:inline-block;width:24px;height:24px;border:2px solid rgba(0,229,255,.2);border-top:2px solid var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
 /* ── BLOG POST MODAL ── */
 .post-overlay{position:fixed;inset:0;z-index:500;background:rgba(4,8,15,.95);backdrop-filter:blur(24px);display:flex;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto;opacity:0;pointer-events:none;transition:.35s ease;}
 .post-overlay.open{opacity:1;pointer-events:all;}
@@ -133,9 +128,6 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .post-modal-header{padding:2.5rem 3rem 2rem;position:relative;}
 .post-close{position:absolute;top:1.5rem;right:1.5rem;width:40px;height:40px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;color:var(--muted2);transition:.2s;}
 .post-close:hover{background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.3);}
-.post-delete{position:absolute;top:1.5rem;right:4.5rem;width:40px;height:40px;background:#b91c1c;border:1px solid #7f1d1d;border-radius:10px;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;color:#ffffff;transition:.2s;}
-.post-delete:hover{background:#991b1b;border-color:#5b0a0a;filter:brightness(1.1);}
-.post-delete.visible{display:flex;}
 .post-category-badge{display:inline-block;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.15);color:var(--accent);font-size:.75rem;font-weight:700;padding:.3rem .8rem;border-radius:6px;margin-bottom:1rem;letter-spacing:.07em;text-transform:uppercase;}
 .post-title{font-family:var(--display);font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:.8rem;letter-spacing:-.02em;}
 .post-byline{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
@@ -144,7 +136,7 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .post-readtime{font-family:var(--mono);font-size:.78rem;color:var(--accent);background:rgba(0,229,255,.08);padding:.2rem .6rem;border-radius:5px;border:1px solid rgba(0,229,255,.15);}
 .post-cover{width:100%;max-height:400px;object-fit:cover;}
 .post-body{padding:2.5rem 3rem;}
-.post-content{color:var(--muted2);font-size:.97rem;line-height:2;}
+.post-content{color:var(--muted2);font-size:.97rem;line-height:2;white-space:pre-wrap;word-break:break-word;}
 /* markdown-style content */
 .post-content h1,.post-content h2,.post-content h3{color:var(--text);font-family:var(--display);font-weight:800;margin:2rem 0 .8rem;line-height:1.2;}
 .post-content h1{font-size:1.8rem;}
@@ -159,7 +151,6 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .post-content ul,.post-content ol{padding-left:1.5rem;margin:.8rem 0;display:flex;flex-direction:column;gap:.4rem;}
 .post-content li{color:var(--muted2);}
 .post-content strong{color:var(--text);font-weight:600;}
-.post-content p{word-break:break-word;white-space:normal;}
 
 /* INLINE IMAGES */
 .post-images{margin:2rem 0;}
@@ -227,15 +218,13 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .staged-images{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;}
 .staged-img{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
 .staged-img img{width:80px;height:60px;object-fit:cover;display:block;}
-.staged-img-remove{position:absolute;top:2px;right:2px;background:rgba(239,68,68,.85);border:none;border-radius:4px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;cursor:pointer;line-height:1;transition:.2s;}
-.staged-img-remove:hover{background:rgba(239,68,68,1);}
+.staged-img-remove{position:absolute;top:2px;right:2px;background:rgba(239,68,68,.85);border:none;border-radius:4px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;cursor:pointer;line-height:1;}
 
 /* TOAST */
 .toast{position:fixed;bottom:2rem;right:2rem;z-index:700;background:var(--surface);border:1px solid rgba(0,229,255,.25);border-radius:12px;padding:.9rem 1.4rem;font-size:.88rem;font-weight:500;transform:translateY(80px);opacity:0;transition:.35s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center;gap:.6rem;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.success{border-color:rgba(74,222,128,.3);color:#4ade80;}
 .toast.error{border-color:rgba(239,68,68,.3);color:#f87171;}
-.toast.warning{border-color:rgba(245,158,11,.3);color:#fbbf24;}
 
 /* WRITE FAB */
 .write-fab{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:200;background:linear-gradient(135deg,var(--accent),#7c3aed);color:#000;padding:.75rem 2rem;border-radius:999px;font-family:var(--font);font-weight:700;font-size:.88rem;border:none;cursor:pointer;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 30px rgba(0,229,255,.25);transition:.3s;}
@@ -269,7 +258,6 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   .post-modal-header,.post-body,.comments-section{padding-left:2rem;padding-right:2rem;}
   .form-row{grid-template-columns:1fr;}
   .write-row{grid-template-columns:1fr;}
-  .post-delete{right:3rem;}
 }
 @media(max-width:600px){
   .blog-hero{padding:6rem 1.2rem 2.5rem;}
@@ -281,7 +269,6 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   .write-modal{padding:1.5rem 1.2rem;}
   footer{flex-direction:column;gap:1rem;text-align:center;padding:1.5rem 1.2rem;}
   .footer-links{justify-content:center;gap:1.2rem;}
-  .post-delete{top:1.2rem;right:1.2rem;width:36px;height:36px;font-size:.85rem;}
 }
 </style>
 </head>
@@ -304,14 +291,14 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
       <li><a href="index.html#contact">Contact</a></li>
     </ul>
     <a href="index.html#contact" class="nav-cta">Let's Talk</a>
-    <button class="mob-menu-btn" id="mobMenuBtn" aria-label="Open navigation menu"><span></span><span></span><span></span></button>
+    <button class="mob-menu-btn" id="mobMenuBtn"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
 <!-- MOBILE DRAWER -->
 <div class="mob-overlay" id="mobOverlay"></div>
-<div class="mob-drawer" id="mobDrawer" role="navigation" aria-label="Mobile navigation">
-  <button class="mob-close" id="mobClose" aria-label="Close navigation">✕</button>
+<div class="mob-drawer" id="mobDrawer">
+  <button class="mob-close" id="mobClose">✕</button>
   <a href="index.html#about" class="mob-link">About</a>
   <a href="index.html#skills" class="mob-link">Skills</a>
   <a href="index.html#projects" class="mob-link">Projects</a>
@@ -327,19 +314,19 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
     <span class="sec-label">📝 DevOps Notes</span>
     <h1 class="hero-title">Things I Learn<br><span>Hands-On</span></h1>
     <p class="hero-sub">Notes, lab walkthroughs, and learnings from building real infrastructure. No fluff — just what actually worked and what didn't.</p>
-    <div class="filter-bar" id="filterBar" role="tablist">
-      <button class="filter-btn active" data-cat="all" role="tab">All Posts</button>
-      <button class="filter-btn" data-cat="Kubernetes" role="tab">Kubernetes</button>
-      <button class="filter-btn" data-cat="CI/CD" role="tab">CI/CD</button>
-      <button class="filter-btn" data-cat="Monitoring" role="tab">Monitoring</button>
-      <button class="filter-btn" data-cat="GitOps" role="tab">GitOps</button>
-      <button class="filter-btn" data-cat="Linux" role="tab">Linux</button>
-      <button class="filter-btn" data-cat="AWS" role="tab">AWS</button>
-      <button class="filter-btn" data-cat="General" role="tab">General</button>
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-cat="all">All Posts</button>
+      <button class="filter-btn" data-cat="Kubernetes">Kubernetes</button>
+      <button class="filter-btn" data-cat="CI/CD">CI/CD</button>
+      <button class="filter-btn" data-cat="Monitoring">Monitoring</button>
+      <button class="filter-btn" data-cat="GitOps">GitOps</button>
+      <button class="filter-btn" data-cat="Linux">Linux</button>
+      <button class="filter-btn" data-cat="AWS">AWS</button>
+      <button class="filter-btn" data-cat="General">General</button>
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search posts…" aria-label="Search blog posts">
+      <input type="text" id="searchInput" placeholder="Search posts…">
     </div>
   </div>
 </section>
@@ -347,7 +334,7 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
 <!-- BLOG GRID -->
 <section class="blog-section">
   <div class="blog-container">
-    <div id="blogGrid" class="blog-grid" role="main" aria-label="Blog posts"></div>
+    <div id="blogGrid" class="blog-grid"></div>
   </div>
 </section>
 
@@ -355,21 +342,26 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
 <footer>
   <span class="footer-text">© 2026 Praveen B · Chennai, India</span>
   <div class="footer-links">
-    <a href="https://github.com/MytPraveen" target="_blank" rel="noopener noreferrer">GitHub</a>
-    <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="https://github.com/MytPraveen" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank">LinkedIn</a>
     <a href="mailto:mosespraveen96@gmail.com">Email</a>
   </div>
 </footer>
 
 <!-- WRITE FAB -->
-<button class="write-fab" id="writeFab" aria-label="Write a new blog post">✏️ Write a Post</button>
+<button class="write-fab" id="writeFab">✏️ Write a Post</button>
 
 <!-- BLOG POST MODAL -->
-<div class="post-overlay" id="postOverlay" role="dialog" aria-modal="true" aria-labelledby="postTitle">
+<div class="post-overlay" id="postOverlay">
   <div class="post-modal" id="postModal">
     <div class="post-modal-header">
-      <button class="post-close" id="postClose" aria-label="Close post">✕</button>
-      <button class="post-delete" id="postDelete" title="Delete this post (admin only)">🗑</button>
+      <button class="post-close" id="postClose">✕</button>
+<button class="post-delete" id="postDelete" style="display:none;" onclick="deleteCurrentPost()"
+  style="position:absolute;top:1.5rem;right:4rem;width:40px;height:40px;
+         background:#b91c1c;border:1px solid #991b1b;
+         border-radius:10px;display:flex;align-items:center;justify-content:center;
+         cursor:pointer;font-size:1rem;color:#ffffff;transition:.2s;"
+  title="Delete this post">🗑</button>
 
       <div class="post-category-badge" id="postCategory"></div>
       <h1 class="post-title" id="postTitle"></h1>
@@ -395,35 +387,35 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
         <h4>Leave a note</h4>
         <div class="form-row">
           <div class="form-field">
-            <label for="commentName">Name</label>
+            <label>Name</label>
             <input type="text" id="commentName" placeholder="Your name">
           </div>
           <div class="form-field">
-            <label for="commentEmail">Email</label>
+            <label>Email</label>
             <input type="email" id="commentEmail" placeholder="your@email.com">
           </div>
         </div>
         <div class="form-field" style="margin-bottom:1rem">
-          <label for="commentText">Comment</label>
+          <label>Comment</label>
           <textarea id="commentText" rows="4" placeholder="Share your thoughts, questions, or tips…"></textarea>
         </div>
-        <button class="btn-submit" id="submitComment" aria-label="Post your comment">Post Comment</button>
+        <button class="btn-submit" id="submitComment">Post Comment</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- WRITE PANEL -->
-<div class="write-panel" id="writePanel" role="dialog" aria-modal="true" aria-labelledby="writePanelTitle">
+<div class="write-panel" id="writePanel">
   <div class="write-modal">
-    <h2 id="writePanelTitle">✏️ New Post</h2>
+    <h2>✏️ New Post</h2>
     <div class="write-row">
       <div class="write-field">
-        <label for="wTitle">Title *</label>
+        <label>Title *</label>
         <input type="text" id="wTitle" placeholder="e.g. How I set up MetalLB on bare metal">
       </div>
       <div class="write-field">
-        <label for="wCategory">Category</label>
+        <label>Category</label>
         <select id="wCategory">
           <option>Kubernetes</option>
           <option>CI/CD</option>
@@ -437,22 +429,22 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
     </div>
     <div class="write-row">
       <div class="write-field">
-        <label for="wTags">Tags</label>
+        <label>Tags</label>
         <input type="text" id="wTags" placeholder="k8s, metallb, ingress (comma separated)">
         <div class="write-hint">Separate tags with commas</div>
       </div>
       <div class="write-field">
-        <label for="wAuthor">Author</label>
+        <label>Author</label>
         <input type="text" id="wAuthor" value="Praveen B">
       </div>
     </div>
     <div class="write-field">
-      <label for="wContent">Content *</label>
-      <textarea id="wContent" placeholder="Write your post here...&#10;&#10;You can use markdown formatting:&#10;## Heading&#10;### Sub-heading&#10;`inline code`&#10;```&#10;code block&#10;```&#10;**bold**, *italic*&#10;- bullet point&#10;> blockquote"></textarea>
+      <label>Content *</label>
+      <textarea id="wContent" placeholder="Write your post here...&#10;&#10;You can use markdown-style formatting:&#10;## Heading&#10;### Sub-heading&#10;`inline code`&#10;```&#10;code block&#10;```&#10;**bold**, *italic*&#10;- bullet point&#10;&gt; blockquote"></textarea>
     </div>
     <div class="write-field">
       <label>Screenshots & Images</label>
-      <div class="img-upload-area" id="imgUploadArea" role="button" tabindex="0" aria-label="Click to upload images or drag and drop">
+      <div class="img-upload-area" id="imgUploadArea">
         <div class="upload-icon">📸</div>
         <p>Click to upload screenshots, or drag & drop</p>
         <p style="font-size:.75rem;color:var(--muted);margin-top:.3rem;">JPG, PNG, GIF, WebP — max 10MB each</p>
@@ -469,40 +461,23 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
 </div>
 
 <!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox">
-  <button class="lightbox-close" id="lightboxClose" aria-label="Close image">✕</button>
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
   <img id="lightboxImg" src="" alt="">
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-const API = window.APP_CONFIG?.API_URL || (
-  window.location.hostname === 'localhost'
-    ? 'http://localhost:5000'
-    : 'https://api.praveeninfra.online'
-);
+const API = "https://api.praveeninfra.online";
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let allBlogs = [];
 let currentCategory = 'all';
 let currentBlogId = null;
 let stagedFiles = [];
-
-// Get admin token from localStorage
-function getAuthHeaders() {
-  const token = localStorage.getItem('admin_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
-  };
-}
-
-function isAdmin() {
-  return !!localStorage.getItem('admin_token');
-}
 
 // ── CURSOR ────────────────────────────────────────────────────────────────────
 const cursor = document.getElementById('cursor');
@@ -537,8 +512,7 @@ document.querySelectorAll('.mob-link').forEach(l=>l.addEventListener('click',clo
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg, type='success') {
   const t = document.getElementById('toast');
-  const icon = type==='success' ? '✅' : type==='error' ? '❌' : '⚠️';
-  t.textContent = icon + ' ' + msg;
+  t.textContent = (type==='success'?'✅ ':'❌ ') + msg;
   t.className = `toast ${type} show`;
   setTimeout(()=>t.classList.remove('show'), 3500);
 }
@@ -554,6 +528,24 @@ function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
 }
 
+function renderMarkdown(text) {
+  // simple markdown-ish rendering
+  return text
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/```([\s\S]*?)```/gm, '<pre><code>$1</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hupbl])/gm, '')
+    .trim();
+}
+
 function getCoverIcon(category) {
   const icons = {Kubernetes:'☸️',CI_CD:'🔄','CI/CD':'🔄',Monitoring:'📊',GitOps:'🔀',Linux:'🐧',AWS:'☁️',General:'📝'};
   return icons[category] || '📝';
@@ -564,28 +556,16 @@ async function fetchBlogs() {
   showSkeletons();
   try {
     const res = await fetch(`${API}/blogs`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     allBlogs = data.blogs || [];
     renderGrid();
   } catch(e) {
-    handleError(e, 'Failed to fetch blog posts');
+    document.getElementById('blogGrid').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <p>Couldn't reach the backend at <code>${API}</code>.<br>Make sure your backend is deployed and the API URL is correct.</p>
+      </div>`;
   }
-}
-
-function handleError(error, defaultMsg) {
-  console.error('Error:', error);
-  let msg = defaultMsg;
-  if(error.message.includes('fetch')) {
-    msg = `Backend unavailable at ${API}`;
-  } else if(error.message.includes('401')) {
-    msg = 'Not authorized. Admin login required.';
-  } else if(error.message.includes('timeout')) {
-    msg = 'Request timed out — try again';
-  } else if(error.message) {
-    msg = error.message;
-  }
-  showToast(msg, 'error');
 }
 
 function showSkeletons() {
@@ -621,7 +601,7 @@ function renderGrid() {
   }
 
   grid.innerHTML = filtered.map(blog => `
-    <div class="blog-card fade-up" onclick="openPost(${blog.id})" role="article" tabindex="0" aria-label="Blog post: ${blog.title}" onkeypress="if(event.key==='Enter') openPost(${blog.id})">
+    <div class="blog-card fade-up" onclick="openPost(${blog.id})">
       ${blog.cover_image
         ? `<img class="blog-cover" src="${API}/uploads/${blog.cover_image}" alt="${blog.title}" loading="lazy">`
         : `<div class="blog-cover-placeholder">${getCoverIcon(blog.category)}</div>`}
@@ -667,12 +647,11 @@ async function openPost(blogId) {
 
   // fill with loading state
   document.getElementById('postTitle').textContent = 'Loading…';
-  document.getElementById('postContent').innerHTML = '<div style="color:var(--muted);text-align:center;padding:2rem"><div class="spinner"></div><p style="margin-top:1rem">Fetching post…</p></div>';
+  document.getElementById('postContent').innerHTML = '<div style="color:var(--muted)">Fetching post…</div>';
   document.getElementById('commentsList').innerHTML = '';
 
   try {
     const res = await fetch(`${API}/blogs/${blogId}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const blog = await res.json();
 
     document.getElementById('postCategory').textContent = blog.category;
@@ -684,28 +663,21 @@ async function openPost(blogId) {
     const cover = document.getElementById('postCover');
     if(blog.cover_image) {
       cover.src = `${API}/uploads/${blog.cover_image}`;
-      cover.alt = blog.title;
       cover.style.display = 'block';
     } else {
       cover.style.display = 'none';
     }
 
-    // Render markdown with DOMPurify sanitization
-    const renderedMarkdown = marked.parse(blog.content, {
-      gfm: true,
-      breaks: true,
-      sanitize: false
-    });
-    document.getElementById('postContent').innerHTML = DOMPurify.sanitize(renderedMarkdown);
+    document.getElementById('postContent').innerHTML = renderMarkdown(blog.content);
 
     // images
     const imagesDiv = document.getElementById('postImages');
     if(blog.images && blog.images.length) {
       imagesDiv.style.display = 'block';
       document.getElementById('postImageGrid').innerHTML = blog.images.map(img=>`
-        <div class="post-image-item" onclick="openLightbox('${API}/uploads/${img.filename}')" role="button" tabindex="0" aria-label="Open image: ${img.caption || 'Screenshot'}" onkeypress="if(event.key==='Enter') openLightbox('${API}/uploads/${img.filename}')">
-          <img src="${API}/uploads/${img.filename}" alt="${img.caption || 'Screenshot'}" loading="lazy">
-          ${img.caption ? `<div class="post-image-caption">${DOMPurify.sanitize(img.caption)}</div>` : ''}
+        <div class="post-image-item" onclick="openLightbox('${API}/uploads/${img.filename}')">
+          <img src="${API}/uploads/${img.filename}" alt="${img.caption}" loading="lazy">
+          ${img.caption ? `<div class="post-image-caption">${img.caption}</div>` : ''}
         </div>`).join('');
     } else {
       imagesDiv.style.display = 'none';
@@ -714,19 +686,11 @@ async function openPost(blogId) {
     // tags
     document.getElementById('postTagsSection').innerHTML = (blog.tags||[]).map(t=>`<span class="post-tag-pill">#${t}</span>`).join('');
 
-    // comments - sanitize comment content
+    // comments
     renderComments(blog.comments || []);
 
-    // Show delete button if admin
-    const deleteBtn = document.getElementById('postDelete');
-    if(isAdmin()) {
-      deleteBtn.classList.add('visible');
-    } else {
-      deleteBtn.classList.remove('visible');
-    }
-
   } catch(e) {
-    handleError(e, 'Failed to load post');
+    document.getElementById('postContent').innerHTML = '<div style="color:#f87171">Failed to load post.</div>';
   }
 }
 
@@ -740,10 +704,10 @@ function renderComments(comments) {
   list.innerHTML = comments.map(c=>`
     <div class="comment-item">
       <div class="comment-header">
-        <span class="comment-name">💬 ${DOMPurify.sanitize(c.name)}</span>
+        <span class="comment-name">💬 ${c.name}</span>
         <span class="comment-date">${formatDate(c.created_at)}</span>
       </div>
-      <div class="comment-text">${DOMPurify.sanitize(c.content)}</div>
+      <div class="comment-text">${c.content}</div>
     </div>`).join('');
 }
 
@@ -774,7 +738,6 @@ document.getElementById('submitComment').addEventListener('click', async ()=>{
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({name,email,content})
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if(data.id) {
       document.getElementById('commentName').value='';
@@ -786,11 +749,9 @@ document.getElementById('submitComment').addEventListener('click', async ()=>{
       renderComments(d2.comments||[]);
       showToast('Comment posted!');
     } else {
-      showToast(data.error || 'Failed to post comment','error');
+      showToast('Failed to post comment','error');
     }
-  } catch(e) { 
-    handleError(e, 'Failed to post comment');
-  }
+  } catch(e) { showToast('Network error','error'); }
   btn.disabled=false; btn.textContent='Post Comment';
 });
 
@@ -802,11 +763,6 @@ function openLightbox(src) {
 document.getElementById('lightboxClose').addEventListener('click',()=>document.getElementById('lightbox').classList.remove('open'));
 document.getElementById('lightbox').addEventListener('click', e=>{
   if(e.target===document.getElementById('lightbox')) document.getElementById('lightbox').classList.remove('open');
-});
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape') {
-    document.getElementById('lightbox').classList.remove('open');
-  }
 });
 
 // ── WRITE PANEL ───────────────────────────────────────────────────────────────
@@ -821,12 +777,6 @@ document.getElementById('cancelWrite').addEventListener('click',()=>{
 
 // image staging
 document.getElementById('imgUploadArea').addEventListener('click',()=>document.getElementById('imgFileInput').click());
-document.getElementById('imgUploadArea').addEventListener('keypress', e=>{
-  if(e.key==='Enter' || e.key===' ') {
-    e.preventDefault();
-    document.getElementById('imgFileInput').click();
-  }
-});
 document.getElementById('imgUploadArea').addEventListener('dragover',e=>{e.preventDefault();e.currentTarget.style.borderColor='var(--accent)';});
 document.getElementById('imgUploadArea').addEventListener('dragleave',e=>{e.currentTarget.style.borderColor='';});
 document.getElementById('imgUploadArea').addEventListener('drop',e=>{
@@ -839,25 +789,14 @@ document.getElementById('imgFileInput').addEventListener('change',e=>{
 });
 
 function stageFiles(files) {
-  files.forEach((f, idx) => {
+  files.forEach(f=>{
     if(f.size > 10*1024*1024) { showToast(`${f.name} is too large (max 10MB)`,'error'); return; }
     stagedFiles.push(f);
-    const fileIndex = stagedFiles.length - 1;  // Capture index NOW
-    
     const reader = new FileReader();
     reader.onload = ev => {
       const div = document.createElement('div');
       div.className='staged-img';
-      div.setAttribute('data-index', fileIndex);
-      div.innerHTML=`<img src="${ev.target.result}" alt="Staged image"><button class="staged-img-remove" type="button" aria-label="Remove image">✕</button>`;
-      
-      div.querySelector('.staged-img-remove').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = parseInt(div.getAttribute('data-index'));
-        stagedFiles.splice(idx, 1);
-        div.remove();
-      });
-      
+      div.innerHTML=`<img src="${ev.target.result}"><button class="staged-img-remove" onclick="this.parentElement.remove();stagedFiles.splice(${stagedFiles.length-1},1)">✕</button>`;
       document.getElementById('stagedImages').appendChild(div);
     };
     reader.readAsDataURL(f);
@@ -883,14 +822,9 @@ document.getElementById('publishBtn').addEventListener('click', async ()=>{
     // 1. create blog
     status.textContent = 'Creating post…';
     const res = await fetch(`${API}/blogs`, {
-      method:'POST',
-      headers: getAuthHeaders(),
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({title,content,author,category,tags,cover_image:''})
     });
-    if (!res.ok) {
-      const errData = await res.json();
-      throw new Error(errData.error || `HTTP ${res.status}`);
-    }
     const data = await res.json();
     if(!data.id) throw new Error(data.error || 'Failed to create post');
     const blogId = data.id;
@@ -902,12 +836,7 @@ document.getElementById('publishBtn').addEventListener('click', async ()=>{
         const fd = new FormData();
         fd.append('file', file);
         fd.append('caption', file.name.replace(/\.[^.]+$/,''));
-        const imgRes = await fetch(`${API}/blogs/${blogId}/images`, {
-          method:'POST',
-          headers: { 'Authorization': getAuthHeaders()['Authorization'] || '' },
-          body:fd
-        });
-        if (!imgRes.ok) console.warn('Image upload failed for', file.name);
+        await fetch(`${API}/blogs/${blogId}/images`, {method:'POST',body:fd});
       }
     }
 
@@ -925,48 +854,10 @@ document.getElementById('publishBtn').addEventListener('click', async ()=>{
     fetchBlogs(); // refresh grid
 
   } catch(e) {
-    handleError(e, 'Failed to publish post');
+    showToast(e.message || 'Failed to publish','error');
     status.textContent='';
   }
   btn.disabled=false; btn.textContent='🚀 Publish Post';
-});
-
-// Delete post
-async function deleteCurrentPost() {
-  if (!currentBlogId) return;
-  if (!isAdmin()) {
-    showToast('Admin login required to delete posts', 'error');
-    return;
-  }
-
-  const confirmed = confirm('Delete this post permanently? This cannot be undone.');
-  if (!confirmed) return;
-
-  try {
-    const res = await fetch(`${API}/blogs/${currentBlogId}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || `HTTP ${res.status}`);
-    }
-
-    document.getElementById('postOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-    currentBlogId = null;
-
-    showToast('Post deleted successfully');
-    fetchBlogs();
-  } catch(e) {
-    handleError(e, 'Failed to delete post');
-  }
-}
-
-document.getElementById('postDelete').addEventListener('click', (e) => {
-  e.stopPropagation();
-  deleteCurrentPost();
 });
 
 // ESC key
@@ -979,6 +870,39 @@ document.addEventListener('keydown', e=>{
   }
 });
 
+async function deleteCurrentPost() {
+  if (!currentBlogId) return;
+
+  // confirm before deleting
+  const confirmed = confirm(
+    'Delete this post permanently? This cannot be undone.'
+  );
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`${API}/blogs/${currentBlogId}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      // close the modal
+      document.getElementById('postOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+      currentBlogId = null;
+
+      showToast('Post deleted successfully');
+
+      // refresh the blog grid
+      fetchBlogs();
+    } else {
+      showToast(data.error || 'Failed to delete post', 'error');
+    }
+  } catch (error) {
+  console.error('Delete post failed:', error);
+  showToast('Network error — could not delete', 'error');
+  }
+}
 // ── INIT ──────────────────────────────────────────────────────────────────────
 fetchBlogs();
 </script>
