@@ -434,16 +434,16 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
         <div class="write-hint">Separate tags with commas</div>
       </div>
       <div class="write-field">
-        <label>Author</label>
-        <input type="text" id="wAuthor" value="Praveen B">
+        <label for="wAuthor">Author</label>
+        <input type="text" id="wAuthor">
       </div>
     </div>
     <div class="write-field">
-      <label>Content *</label>
+      <label for="wContent">Content *</label>
       <textarea id="wContent" placeholder="Write your post here...&#10;&#10;You can use markdown-style formatting:&#10;## Heading&#10;### Sub-heading&#10;`inline code`&#10;```&#10;code block&#10;```&#10;**bold**, *italic*&#10;- bullet point&#10;&gt; blockquote"></textarea>
     </div>
     <div class="write-field">
-      <label>Screenshots & Images</label>
+      <label for="imgFileInput">Screenshots & Images</label>
       <div class="img-upload-area" id="imgUploadArea">
         <div class="upload-icon">📸</div>
         <p>Click to upload screenshots, or drag & drop</p>
@@ -541,7 +541,7 @@ function renderMarkdown(text) {
     .replaceAll(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
     .replaceAll(/^- (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')   // Keep as replace()
-    .replaceAll(/\n\n/g, '</p><p>')
+    .replaceAll(/\n{2}/g, '</p><p>')
     .replaceAll(/^(?!<[hupbl])/gm, '')
     .trim();
 }
@@ -571,7 +571,7 @@ async function fetchBlogs() {
 function showSkeletons() {
   const grid = document.getElementById('blogGrid');
   grid.className = 'loading-grid';
-  grid.innerHTML = Array(3).fill(`
+  grid.innerHTML = new Array(3).fill(`
     <div class="skeleton-card">
       <div class="skeleton skel-img"></div>
       <div class="skel-body">
@@ -611,7 +611,7 @@ function renderGrid() {
           <span class="blog-date">${formatDate(blog.created_at)}</span>
         </div>
         <h3>${blog.title}</h3>
-        <p class="blog-excerpt">${blog.content.replace(/<[^>]+>/g,'').substring(0,160)}…</p>
+        <p class="blog-excerpt">${blog.content.replaceAll((/<[^>]+>/g,'').substring(0,160)}…</p>
         <div class="blog-footer">
           <div class="blog-tags">${(blog.tags||[]).slice(0,3).map(t=>`<span class="blog-tag">${t}</span>`).join('')}</div>
           <span class="read-time">⏱ ${blog.read_time}m read</span>
