@@ -531,18 +531,18 @@ function formatDate(dateStr) {
 function renderMarkdown(text) {
   // simple markdown-ish rendering
   return text
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/```([\s\S]*?)```/gm, '<pre><code>$1</code></pre>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hupbl])/gm, '')
+    .replaceAll(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replaceAll(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replaceAll(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replaceAll(/```([\s\S]*?)```/gm, '<pre><code>$1</code></pre>')
+    .replaceAll(/`([^`]+)`/g, '<code>$1</code>')
+    .replaceAll(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replaceAll(/\*(.+?)\*/g, '<em>$1</em>')
+    .replaceAll(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replaceAll(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')   // Keep as replace()
+    .replaceAll(/\n\n/g, '</p><p>')
+    .replaceAll(/^(?!<[hupbl])/gm, '')
     .trim();
 }
 
