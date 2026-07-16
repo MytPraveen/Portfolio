@@ -164,7 +164,7 @@ spec:
       }
     }
     
-    /*
+    
     stage('Quality Gate') {
       steps {
         script {
@@ -187,7 +187,7 @@ spec:
         }
       }
     }
-    */
+    
 
     stage('Build Docker Image') {
       steps {
