@@ -93,7 +93,7 @@ spec:
   }
 
   environment {
-    IMAGE_NAME    = "registry.praveeninfra.online/docker-private/devops-portfolio""
+    IMAGE_NAME    = "registry.praveeninfra.online/docker-private/devops-portfolio"
     IMAGE_TAG     = "v${BUILD_NUMBER}"
     GITOPS_REPO   = "github.com:MytPraveen/portfolio-gitops.git"
     GIT_USER_NAME = "Jenkins CI"
