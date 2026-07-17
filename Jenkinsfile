@@ -67,7 +67,7 @@ spec:
   volumes:
   - name: docker-config
     secret:
-      secretName: dockerhub-secret
+      secretName: nexus-registry-secret
   - name: workspace
     emptyDir: {}
   - name: github-ssh
@@ -93,7 +93,7 @@ spec:
   }
 
   environment {
-    IMAGE_NAME    = "praveendevops95/devops-portfolio"
+    IMAGE_NAME    = "registry.praveeninfra.online/docker-private/devops-portfolio""
     IMAGE_TAG     = "v${BUILD_NUMBER}"
     GITOPS_REPO   = "github.com:MytPraveen/portfolio-gitops.git"
     GIT_USER_NAME = "Jenkins CI"
@@ -293,7 +293,7 @@ spec:
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            sed -i 's|praveendevops95/devops-portfolio:.*|praveendevops95/devops-portfolio:'"${IMAGE_TAG}"'|g' staging/frontend/deployment.yaml
+            sed -i 's|registry.praveeninfra.online/docker-private/devops-portfolio:.*|registry.praveeninfra.online/docker-private/devops-portfolio:'"${IMAGE_TAG}"'|g' staging/frontend/deployment.yaml
 
             git add staging/frontend/deployment.yaml
             git commit -m "ci: update staging to ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
