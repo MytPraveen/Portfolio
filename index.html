@@ -21,18 +21,14 @@
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;cursor:none;}
 
-/* CURSOR (desktop only) */
 .cursor{width:10px;height:10px;background:var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .15s ease;mix-blend-mode:screen;}
 .cursor-ring{width:36px;height:36px;border:1px solid rgba(0,229,255,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
 .cursor-ring.hover{transform:scale(1.8);border-color:rgba(0,229,255,.8);}
 
-/* GRID BG */
 body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
 
-/* NOISE */
 .noise{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
-/* ── NAVBAR ── */
 nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,8,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .nav-inner{max-width:1300px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.9rem 2.5rem;}
 .logo{font-family:var(--display);font-size:1.4rem;font-weight:800;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:.5rem;}
@@ -44,20 +40,12 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .nav-cta{background:var(--accent);color:#000;padding:.55rem 1.4rem;border-radius:10px;font-weight:700;font-size:.88rem;text-decoration:none;transition:.3s;letter-spacing:.02em;}
 .nav-cta:hover{background:#fff;}
 
-/* HAMBURGER (hidden on desktop) */
 .mob-menu-btn{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.5rem;}
 .mob-menu-btn span{display:block;width:22px;height:2px;background:var(--muted2);border-radius:2px;transition:.3s;}
 
-/* ── MOBILE DRAWER (always in DOM, slides in/out) ── */
 .mob-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(4,8,15,.75);backdrop-filter:blur(4px);}
 .mob-overlay.open{display:block;}
-.mob-drawer{
-  position:fixed;top:0;right:0;width:75vw;max-width:280px;height:100%;
-  background:var(--surface);border-left:1px solid var(--border2);
-  z-index:200;padding:5rem 1.8rem 2rem;
-  display:flex;flex-direction:column;gap:0;
-  transform:translateX(100%);transition:.35s cubic-bezier(.2,.8,.2,1);
-}
+.mob-drawer{position:fixed;top:0;right:0;width:75vw;max-width:280px;height:100%;background:var(--surface);border-left:1px solid var(--border2);z-index:200;padding:5rem 1.8rem 2rem;display:flex;flex-direction:column;gap:0;transform:translateX(100%);transition:.35s cubic-bezier(.2,.8,.2,1);}
 .mob-drawer.open{transform:translateX(0);}
 .mob-close{position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:1rem;cursor:pointer;transition:.2s;}
 .mob-close:hover{background:rgba(239,68,68,.15);color:#f87171;}
@@ -66,7 +54,6 @@ nav.topnav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(4,
 .mob-drawer a.mob-link:last-of-type{border-bottom:none;}
 .mob-cta{display:block;margin-top:1.5rem;background:linear-gradient(135deg,var(--accent),#7c3aed);color:#000;padding:.8rem 1.2rem;border-radius:10px;font-weight:700;text-align:center;text-decoration:none;font-size:.95rem;}
 
-/* ── HERO ── */
 .hero{min-height:100vh;display:flex;align-items:center;padding:9rem 2.5rem 4rem;position:relative;z-index:1;overflow:hidden;}
 .hero-glow1{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,229,255,.08),transparent 70%);top:-150px;left:-150px;pointer-events:none;}
 .hero-glow2{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,.07),transparent 70%);bottom:-100px;right:-100px;pointer-events:none;}
@@ -87,7 +74,6 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text);}
 .btn-ghost:hover{background:rgba(0,229,255,.07);border-color:var(--accent);}
 
-/* TERMINAL */
 .terminal{background:#020912;border:1px solid rgba(0,229,255,.15);border-radius:16px;overflow:hidden;box-shadow:0 0 60px rgba(0,229,255,.06),0 20px 60px rgba(0,0,0,.5);position:relative;}
 .terminal::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,.03),transparent 60%);pointer-events:none;}
 .t-bar{display:flex;align-items:center;gap:.5rem;padding:.9rem 1.2rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);}
@@ -99,7 +85,6 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .t-cursor{display:inline-block;width:8px;height:14px;background:var(--accent);animation:blink .9s infinite;vertical-align:middle;border-radius:1px;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 
-/* ── SECTIONS ── */
 .section{padding:7rem 2.5rem;position:relative;z-index:1;}
 .container{max-width:1200px;margin:auto;}
 .sec-header{margin-bottom:4rem;}
@@ -109,7 +94,6 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .sec-sub{color:var(--muted2);font-size:1rem;margin-top:.8rem;max-width:560px;}
 .divider{width:48px;height:3px;background:linear-gradient(90deg,var(--accent),transparent);margin:.8rem 0 0;border-radius:99px;}
 
-/* ABOUT */
 .about-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
 .about-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;transition:.4s cubic-bezier(.2,.8,.2,1);cursor:pointer;position:relative;overflow:hidden;}
 .about-card::after{content:"";position:absolute;inset:0;border-radius:20px;background:linear-gradient(135deg,rgba(0,229,255,.05),transparent);opacity:0;transition:.3s;}
@@ -119,7 +103,6 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .about-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.7rem;}
 .about-card p{color:var(--muted2);font-size:.9rem;line-height:1.8;}
 
-/* SKILLS */
 .skills-container{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
 .skill-group{margin-bottom:2rem;}
 .skill-group-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:1.2rem;}
@@ -134,7 +117,6 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .skill-tag{padding:.45rem .9rem;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);font-size:.82rem;font-weight:500;transition:.3s;cursor:default;color:var(--muted2);}
 .skill-tag:hover{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.3);color:var(--accent);transform:translateY(-2px);}
 
-/* PROJECTS */
 .projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
 .project-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;cursor:pointer;transition:.4s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden;display:flex;flex-direction:column;gap:1rem;}
 .project-card::before{content:"";position:absolute;width:150px;height:150px;background:radial-gradient(circle,rgba(0,229,255,.1),transparent);top:-50px;right:-50px;pointer-events:none;}
@@ -148,7 +130,6 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .project-cta{display:flex;align-items:center;gap:.5rem;color:var(--accent);font-size:.85rem;font-weight:600;margin-top:auto;transition:.3s;}
 .project-card:hover .project-cta{gap:.8rem;}
 
-/* EXPERIENCE */
 .exp-timeline{max-width:800px;position:relative;}
 .exp-timeline::before{content:"";position:absolute;left:0;top:0;width:1px;height:100%;background:linear-gradient(to bottom,var(--accent),transparent);}
 .exp-item{padding-left:2.5rem;margin-bottom:3.5rem;position:relative;cursor:pointer;}
@@ -161,9 +142,8 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .exp-list{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
 .exp-list li{display:flex;align-items:flex-start;gap:.8rem;color:var(--muted2);font-size:.9rem;line-height:1.7;}
 .exp-list li::before{content:"▸";color:var(--accent);flex-shrink:0;margin-top:.05em;}
-.exp-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--accent3);font-size:.75rem;font-weight:600;padding:.25rem .7rem;border-radius:6px;margin-left:.5rem;vertical-align:middle;}
+.exp-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);color:#4ade80;font-size:.75rem;font-weight:600;padding:.25rem .7rem;border-radius:6px;margin-left:.5rem;vertical-align:middle;}
 
-/* CONTACT */
 .contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
 .contact-links-wrap{display:flex;flex-direction:column;gap:1rem;}
 .contact-link{display:flex;align-items:center;gap:1rem;padding:1rem 1.4rem;background:var(--surface);border:1px solid var(--border);border-radius:14px;text-decoration:none;color:var(--text);transition:.35s;cursor:pointer;}
@@ -178,14 +158,12 @@ h1.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--accen
 .availability{display:inline-flex;align-items:center;gap:.5rem;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);color:#4ade80;font-size:.8rem;font-weight:600;padding:.5rem 1rem;border-radius:999px;margin-bottom:2rem;}
 .avail-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 1.5s infinite;}
 
-/* FOOTER */
 footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
 .footer-text{color:var(--muted);font-size:.85rem;}
 .footer-links{display:flex;gap:1.5rem;}
 .footer-links a{color:var(--muted);font-size:.85rem;text-decoration:none;transition:.2s;}
 .footer-links a:hover{color:var(--accent);}
 
-/* MODAL */
 .overlay{position:fixed;inset:0;z-index:500;background:rgba(4,8,15,.92);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:.35s ease;}
 .overlay.open{opacity:1;pointer-events:all;}
 .modal{background:var(--surface);border:1px solid rgba(0,229,255,.2);border-radius:28px;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;position:relative;transform:scale(.92) translateY(20px);transition:.35s cubic-bezier(.2,.8,.2,1);}
@@ -213,74 +191,40 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
 .metric-val{font-family:var(--display);font-size:1.6rem;font-weight:800;color:var(--accent);}
 .metric-label{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
 
-/* SCROLL ANIMATIONS */
 .fade-up{opacity:0;transform:translateY(32px);transition:all .8s cubic-bezier(.2,.8,.2,1);}
 .fade-up.visible{opacity:1;transform:translateY(0);}
 .fade-up:nth-child(2){transition-delay:.1s;}
 .fade-up:nth-child(3){transition-delay:.2s;}
 
-/* SCROLLBAR */
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(0,229,255,.3);border-radius:99px;}
 
-/* ══════════════════════════════════════════════════════
-   RESPONSIVE DESIGN
-   ─ Tablet  : ≤ 960px  (iPad, small laptops)
-   ─ Mobile  : ≤ 600px  (phones, portrait)
-   How it works: browser reads screen width → applies
-   the matching @media block → collapses grids,
-   adjusts font sizes, shows hamburger menu.
-   Same technique Netflix / Google use.
-══════════════════════════════════════════════════════ */
-
-/* ── TABLET (≤ 960px) ── */
 @media(max-width:960px){
-  /* NAV: hide desktop links, reveal hamburger */
   .nav-links,.nav-cta{display:none;}
   .mob-menu-btn{display:flex;}
   .nav-inner{padding:.9rem 1.8rem;}
-
-  /* HERO: single column, terminal stacks below text */
   .hero{padding:8rem 2rem 4rem;}
   .hero-inner{grid-template-columns:1fr;gap:3rem;}
   h1.hero-title{font-size:2.8rem;}
   .hero-stats{gap:1.5rem;}
-
-  /* SECTIONS: tighter padding */
   .section{padding:5rem 2rem;}
   .sec-title{font-size:2.2rem;}
   .sec-header{margin-bottom:3rem;}
-
-  /* ABOUT: 2-column grid on tablet */
   .about-grid{grid-template-columns:repeat(2,1fr);}
-
-  /* SKILLS: single column */
   .skills-container{grid-template-columns:1fr;}
-
-  /* PROJECTS: 2-column grid on tablet */
   .projects-grid{grid-template-columns:repeat(2,1fr);}
-
-  /* EXPERIENCE: remove decorative timeline line */
   .exp-timeline::before{display:none;}
   .exp-item{padding-left:0;}
   .exp-item::before{display:none;}
-
-  /* CONTACT: stack info + card vertically */
   .contact-wrap{grid-template-columns:1fr;gap:2.5rem;}
 }
 
-/* ── MOBILE (≤ 600px) ── */
 @media(max-width:600px){
-  /* Hide custom cursor — touch devices don't use it */
   .cursor,.cursor-ring{display:none;}
   body{cursor:auto;}
-
-  /* NAV */
   .nav-inner{padding:.8rem 1.2rem;}
   .logo{font-size:1.15rem;}
-
-  /* HERO */
   .hero{padding:6.5rem 1.2rem 3rem;}
   .hero-inner{gap:2rem;}
   h1.hero-title{font-size:2rem;line-height:1.1;}
@@ -289,40 +233,26 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   .hero-stats{gap:1.2rem;flex-wrap:wrap;}
   .stat-num{font-size:1.7rem;}
   .stat-label{font-size:.7rem;}
-
-  /* Buttons: full width, stacked */
   .hero-btns{flex-direction:column;gap:.8rem;}
   .btn{width:100%;justify-content:center;padding:.9rem 1.5rem;font-size:.88rem;}
-
-  /* TERMINAL */
   .t-body{padding:1.2rem;font-size:.74rem;line-height:1.8;}
-
-  /* SECTIONS */
   .section{padding:4rem 1.2rem;}
   .sec-title{font-size:1.9rem;}
   .sec-header{margin-bottom:2.5rem;}
-
-  /* ABOUT: single column on mobile */
   .about-grid{grid-template-columns:1fr;gap:1rem;}
   .about-card{padding:1.4rem;}
   .about-icon{width:44px;height:44px;font-size:1.2rem;margin-bottom:1rem;}
   .about-card h3{font-size:1rem;}
   .about-card p{font-size:.87rem;}
-
-  /* SKILLS */
   .skill-name{width:105px;font-size:.82rem;}
   .skill-bar-wrap{margin:0 .6rem;}
   .skill-pct{font-size:.72rem;width:30px;}
   .skill-tag{font-size:.75rem;padding:.35rem .7rem;}
-
-  /* PROJECTS: single column on mobile */
   .projects-grid{grid-template-columns:1fr;gap:1rem;}
   .project-card{padding:1.4rem;}
   .project-icon{width:48px;height:48px;font-size:1.6rem;}
   .project-card h3{font-size:1.05rem;}
   .project-card p{font-size:.85rem;}
-
-  /* EXPERIENCE */
   .exp-item{margin-bottom:2.5rem;}
   .exp-item h3{font-size:1.1rem;}
   .exp-period{font-size:.72rem;padding:.25rem .6rem;}
@@ -330,21 +260,15 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   .exp-meta{gap:.5rem;flex-wrap:wrap;}
   .exp-list li{font-size:.85rem;line-height:1.7;}
   .exp-company{font-size:.82rem;}
-
-  /* CONTACT */
   .contact-link{padding:.85rem 1.1rem;}
   .contact-link-val{font-size:.85rem;}
   .contact-card{padding:1.8rem 1.4rem;}
   .contact-card h3{font-size:1.2rem;}
   .contact-card p{font-size:.87rem;margin-bottom:1.5rem;}
   .availability{font-size:.75rem;margin-bottom:1.5rem;}
-
-  /* FOOTER: stack links + text */
   footer{flex-direction:column;gap:1rem;text-align:center;padding:1.5rem 1.2rem;}
   .footer-links{justify-content:center;gap:1.2rem;flex-wrap:wrap;}
   .footer-text{font-size:.75rem;}
-
-  /* MODAL */
   .overlay{padding:.5rem;}
   .modal{border-radius:20px;max-height:94vh;}
   .modal-header{padding:1.4rem 1.4rem 1rem;}
@@ -364,7 +288,6 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="noise"></div>
 
-<!-- ── NAVBAR ── -->
 <nav class="topnav">
   <div class="nav-inner">
     <a href="#" class="logo"><div class="logo-dot"></div>Praveen B</a>
@@ -377,26 +300,22 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Let's Talk</a>
-    <button class="mob-menu-btn" id="mobMenuBtn" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="mob-menu-btn" id="mobMenuBtn"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
-<!-- ── MOBILE DRAWER ── -->
 <div class="mob-overlay" id="mobOverlay"></div>
-<div class="mob-drawer" id="mobDrawer" role="dialog" aria-label="Navigation menu">
-  <button class="mob-close" id="mobClose" aria-label="Close menu">✕</button>
-  <a href="#about"      class="mob-link">About</a>
-  <a href="#skills"     class="mob-link">Skills</a>
-  <a href="#projects"   class="mob-link">Projects</a>
+<div class="mob-drawer" id="mobDrawer">
+  <button class="mob-close" id="mobClose">✕</button>
+  <a href="#about" class="mob-link">About</a>
+  <a href="#skills" class="mob-link">Skills</a>
+  <a href="#projects" class="mob-link">Projects</a>
   <a href="#experience" class="mob-link">Experience</a>
   <a href="blog.html" class="mob-link">Blog</a>
-  <a href="#contact"    class="mob-link">Contact</a>
+  <a href="#contact" class="mob-link">Contact</a>
   <a href="mailto:mosespraveen96@gmail.com" class="mob-cta">Let's Talk</a>
 </div>
 
-<!-- ── HERO ── -->
 <section class="hero" id="home">
   <div class="hero-glow1"></div>
   <div class="hero-glow2"></div>
@@ -404,11 +323,11 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
     <div class="fade-up">
       <div class="hero-badge"><div class="badge-dot"></div>Available for new opportunities</div>
       <h1 class="hero-title">Building Resilient<br><em>Cloud Native</em><br>Infrastructure</h1>
-      <p class="hero-desc">DevOps Engineer with 6+ years of IT experience, including 3 years in DevOps — shipping automated pipelines, Kubernetes clusters, and GitOps workflows that scale.</p>
+      <p class="hero-desc">DevOps Engineer with 6+ years of IT experience, including 3.5+ years in DevOps — shipping automated pipelines, Kubernetes clusters, and GitOps workflows that scale.</p>
       <div class="hero-stats">
-        <div class="stat"><span class="stat-num">6+</span><span class="stat-label">Years IT Exp</span></div>
-        <div class="stat"><span class="stat-num">3</span><span class="stat-label">Years DevOps</span></div>
-        <div class="stat"><span class="stat-num">3</span><span class="stat-label">Projects Built</span></div>
+        <div class="stat"><span class="stat-num">6+</span><span class="stat-label">Years IT</span></div>
+        <div class="stat"><span class="stat-num">3.5</span><span class="stat-label">Years DevOps</span></div>
+        <div class="stat"><span class="stat-num">2</span><span class="stat-label">Projects</span></div>
       </div>
       <div class="hero-btns">
         <a href="#projects" class="btn btn-primary">
@@ -426,46 +345,44 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
         <div class="t-dot" style="background:#ef4444"></div>
         <div class="t-dot" style="background:#f59e0b"></div>
         <div class="t-dot" style="background:#22c55e"></div>
-        <span style="margin-left:auto;font-family:var(--mono);font-size:.75rem;color:var(--muted)">praveen@homelab ~</span>
+        <span style="margin-left:auto;font-family:var(--mono);font-size:.75rem;color:var(--muted)">praveen@devops ~</span>
       </div>
       <div class="t-body"><div id="t-lines"></div><div class="t-cursor" id="t-cursor"></div></div>
     </div>
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
 <section class="section" id="about">
   <div class="container">
     <div class="sec-header fade-up">
       <span class="sec-label">Who I Am</span>
       <h2 class="sec-title">Engineering for <span>Scale</span></h2>
       <div class="divider"></div>
-      <p class="sec-sub">Focused on automation, reliability, and cloud-native excellence.</p>
+      <p class="sec-sub">Focused on automation, reliability, and cloud-native excellence with hands-on infrastructure expertise.</p>
     </div>
     <div class="about-grid">
       <div class="about-card fade-up" data-modal="about-cloud">
         <div class="about-icon">☁️</div>
         <h3>Cloud & Infrastructure</h3>
-        <p>Hands-on AWS experience — EC2, S3, IAM, EKS, EBS, RDS, VPC, CloudWatch — paired with Kubernetes infrastructure design and container orchestration at scale.</p>
+        <p>6+ years IT experience with 3.5 years in DevOps. Hands-on AWS (EC2, S3, IAM, VPC, EBS), Kubernetes orchestration, Terraform Infrastructure as Code, and containerization at scale.</p>
         <div style="margin-top:1rem;color:var(--accent);font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem;">Learn more <span>→</span></div>
       </div>
       <div class="about-card fade-up" data-modal="about-cicd">
         <div class="about-icon">🔄</div>
         <h3>CI/CD & GitOps</h3>
-        <p>End-to-end automated pipelines using Jenkins, Maven, SonarQube, Nexus, Docker, ArgoCD, and Helm — with Trivy and OWASP security scanning built into every stage.</p>
+        <p>End-to-end automated pipelines using Jenkins, Maven, SonarQube, Nexus, Docker, and ArgoCD — with Trivy, OWASP security scanning, and zero-touch GitOps deployments built into every stage.</p>
         <div style="margin-top:1rem;color:var(--accent);font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem;">Learn more <span>→</span></div>
       </div>
-      <div class="about-card fade-up" data-modal="about-homelab">
-        <div class="about-icon">🖥️</div>
-        <h3>Kubernetes Homelab</h3>
-        <p>Real-world 3-node K8s cluster on Proxmox — production-grade monitoring, autoscaling, ingress, MetalLB, and full GitOps workflows using ArgoCD and Helm.</p>
+      <div class="about-card fade-up" data-modal="about-ops">
+        <div class="about-icon">📊</div>
+        <h3>Observability & Automation</h3>
+        <p>Monitoring with Prometheus + Grafana, alerting rules, and infrastructure automation via Ansible. Deep expertise in production troubleshooting, performance optimization, and operational excellence.</p>
         <div style="margin-top:1rem;color:var(--accent);font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem;">Learn more <span>→</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── SKILLS ── -->
 <section class="section" id="skills" style="background:linear-gradient(to bottom,transparent,rgba(8,15,26,.5),transparent);">
   <div class="container">
     <div class="sec-header fade-up">
@@ -482,7 +399,7 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
           <div class="skill-item"><div class="skill-name"><span class="skill-icon">⚙️</span> Jenkins</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="85"></div></div><div class="skill-pct">85%</div></div>
           <div class="skill-item"><div class="skill-name"><span class="skill-icon">🔀</span> ArgoCD</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="82"></div></div><div class="skill-pct">82%</div></div>
           <div class="skill-item"><div class="skill-name"><span class="skill-icon">☁️</span> AWS</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="80"></div></div><div class="skill-pct">80%</div></div>
-          <div class="skill-item"><div class="skill-name"><span class="skill-icon">🏗️</span> Terraform</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="72"></div></div><div class="skill-pct">72%</div></div>
+          <div class="skill-item"><div class="skill-name"><span class="skill-icon">🏗️</span> Terraform</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="78"></div></div><div class="skill-pct">78%</div></div>
         </div>
       </div>
       <div>
@@ -491,14 +408,14 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
           <div class="skill-tags">
             <div class="skill-tag">Helm</div><div class="skill-tag">Prometheus</div><div class="skill-tag">Grafana</div>
             <div class="skill-tag">GitHub</div><div class="skill-tag">Linux</div><div class="skill-tag">Trivy</div>
-            <div class="skill-tag">NGINX</div><div class="skill-tag">MetalLB</div><div class="skill-tag">GitOps</div>
-            <div class="skill-tag">CI/CD</div><div class="skill-tag">Proxmox</div><div class="skill-tag">ServiceNow</div>
-            <div class="skill-tag">Ansible</div><div class="skill-tag">SonarQube</div><div class="skill-tag">Maven</div>
-            <div class="skill-tag">Nexus</div><div class="skill-tag">OWASP ZAP</div><div class="skill-tag">Shell Scripting</div>
+            <div class="skill-tag">Maven</div><div class="skill-tag">SonarQube</div><div class="skill-tag">Nexus</div>
+            <div class="skill-tag">GitOps</div><div class="skill-tag">CI/CD</div><div class="skill-tag">ServiceNow</div>
+            <div class="skill-tag">Ansible</div><div class="skill-tag">OWASP ZAP</div><div class="skill-tag">Shell Script</div>
+            <div class="skill-tag">HPA</div><div class="skill-tag">Ingress</div><div class="skill-tag">ITSM v3</div>
           </div>
         </div>
         <div class="skill-group" style="margin-top:2rem;">
-          <div class="skill-group-title">Monitoring & Observability</div>
+          <div class="skill-group-title">Monitoring & Security</div>
           <div class="skill-item"><div class="skill-name"><span class="skill-icon">📊</span> Prometheus</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="83"></div></div><div class="skill-pct">83%</div></div>
           <div class="skill-item"><div class="skill-name"><span class="skill-icon">📈</span> Grafana</div><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="80"></div></div><div class="skill-pct">80%</div></div>
         </div>
@@ -507,45 +424,43 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   </div>
 </section>
 
-<!-- ── PROJECTS ── -->
 <section class="section" id="projects">
   <div class="container">
     <div class="sec-header fade-up">
       <span class="sec-label">What I've Built</span>
       <h2 class="sec-title">Featured <span>Projects</span></h2>
       <div class="divider"></div>
-      <p class="sec-sub">Click any project to see the full architecture and technical details.</p>
+      <p class="sec-sub">Production-grade infrastructure and automation work. Click to explore the technical details.</p>
     </div>
     <div class="projects-grid">
       <div class="project-card fade-up" data-modal="proj-gitops">
         <div class="project-num">01 / PROJECT</div>
         <div class="project-icon">🔄</div>
         <h3>GitOps CI/CD Pipeline</h3>
-        <p>Fully automated deployment pipeline from code push to production using Jenkins, Maven, SonarQube, Nexus, Docker, ArgoCD, and Kubernetes — with zero-touch deployments and built-in security scanning.</p>
+        <p>Fully automated deployment pipeline from code push to production using Jenkins, Maven, SonarQube, Nexus, Docker, ArgoCD — with zero-touch deployments, quality gates, and multi-layer security scanning.</p>
         <div class="project-tags"><span class="project-tag">Jenkins</span><span class="project-tag">Docker</span><span class="project-tag">ArgoCD</span><span class="project-tag">K8s</span></div>
         <div class="project-cta">View Details <span>→</span></div>
       </div>
-      <div class="project-card fade-up" data-modal="proj-homelab">
+      <div class="project-card fade-up" data-modal="proj-monitoring">
         <div class="project-num">02 / PROJECT</div>
-        <div class="project-icon">🖥️</div>
-        <h3>Kubernetes Homelab</h3>
-        <p>Production-grade 3-node K8s cluster built on Proxmox with full monitoring, autoscaling, bare-metal load balancing via MetalLB, NGINX ingress, resource limits, and GitOps-driven delivery.</p>
-        <div class="project-tags"><span class="project-tag">Proxmox</span><span class="project-tag">K8s</span><span class="project-tag">MetalLB</span><span class="project-tag">Ingress</span></div>
+        <div class="project-icon">📊</div>
+        <h3>Monitoring & Observability</h3>
+        <p>Comprehensive monitoring stack with Prometheus scraping, custom Grafana dashboards, alerting rules, and full infrastructure visibility. Real-time metrics, alert routing, and production observability at scale.</p>
+        <div class="project-tags"><span class="project-tag">Prometheus</span><span class="project-tag">Grafana</span><span class="project-tag">K8s</span><span class="project-tag">Alerts</span></div>
         <div class="project-cta">View Details <span>→</span></div>
       </div>
-      <div class="project-card fade-up" data-modal="proj-monitoring">
+      <div class="project-card fade-up" data-modal="proj-portfolio">
         <div class="project-num">03 / PROJECT</div>
-        <div class="project-icon">📊</div>
-        <h3>Observability Stack</h3>
-        <p>Comprehensive monitoring with Prometheus scraping from node-exporter, kube-state-metrics, and cAdvisor — custom Grafana dashboards, alerting rules, and full cluster visibility in real time.</p>
-        <div class="project-tags"><span class="project-tag">Prometheus</span><span class="project-tag">Grafana</span><span class="project-tag">Alerting</span></div>
+        <div class="project-icon">🚀</div>
+        <h3>Portfolio & Blog Platform</h3>
+        <p>Full-stack platform deployed on Kubernetes with frontend (HTML/CSS/JS), backend (FastAPI), database, and GitOps delivery. Showcasing end-to-end DevOps practices in a real production application.</p>
+        <div class="project-tags"><span class="project-tag">K8s</span><span class="project-tag">FastAPI</span><span class="project-tag">GitOps</span><span class="project-tag">Full-Stack</span></div>
         <div class="project-cta">View Details <span>→</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── EXPERIENCE ── -->
 <section class="section" id="experience" style="background:linear-gradient(to bottom,transparent,rgba(8,15,26,.4),transparent);">
   <div class="container">
     <div class="sec-header fade-up">
@@ -556,31 +471,36 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
     <div class="exp-timeline">
       <div class="exp-item fade-up" data-modal="exp-devops">
         <div class="exp-meta">
-          <span class="exp-period">Aug 2023 – June 2026</span>
+          <span class="exp-period">Dec 2023 – June 2026</span>
           <span class="exp-company">Fujitsu Consulting India Pvt Ltd</span>
           <span class="exp-badge">🟢 Current</span>
         </div>
         <h3>DevOps Engineer</h3>
         <ul class="exp-list">
-          <li>Built and maintained CI/CD pipelines using Jenkins, reducing manual deployment effort and improving release efficiency</li>
-          <li>Integrated SonarQube and Nexus for code quality checks and artifact management</li>
-          <li>Containerized applications with Docker and deployed workloads to Kubernetes</li>
-          <li>Implemented GitOps workflows using ArgoCD for automated, consistent delivery</li>
-          <li>Set up monitoring and alerting with Prometheus & Grafana for improved observability</li>
+          <li>Built and maintained CI/CD pipelines using Jenkins, reducing manual deployment effort by automating build, test, and deployment workflows</li>
+          <li>Integrated SonarQube for code quality analysis and Nexus for artifact versioning and management</li>
+          <li>Containerized applications with Docker (multi-stage builds) and deployed workloads to Kubernetes with resource limits and HPA</li>
+          <li>Implemented GitOps-based deployments using ArgoCD for automated, consistent delivery across environments</li>
+          <li>Set up Prometheus + Grafana monitoring with custom dashboards and alert rules for improved observability</li>
+          <li>Performed container security scanning with Trivy and OWASP Dependency Check integrated into CI/CD</li>
+          <li>Automated infrastructure provisioning with Terraform and configuration management with Ansible</li>
         </ul>
         <div style="margin-top:1rem;color:var(--accent);font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;">Full details →</div>
       </div>
       <div class="exp-item fade-up" data-modal="exp-cloud">
         <div class="exp-meta">
-          <span class="exp-period">Feb 2020 – Jul 2023</span>
+          <span class="exp-period">Feb 2020 – Nov 2023</span>
           <span class="exp-company">Fujitsu Consulting India Pvt Ltd</span>
         </div>
         <h3>Cloud Infrastructure Support</h3>
         <ul class="exp-list">
-          <li>Managed cloud infrastructure as Cloud Administrator — server scaling, storage, and network configuration</li>
+          <li>Managed cloud infrastructure as Cloud Administrator — server scaling, storage provisioning, network configuration</li>
           <li>Configured VRF routing, BGP neighbor IPs, DEX routing, and managed cloud instance modifications</li>
-          <li>Provided 24/7/365 production support for Japanese enterprise clients via Fujitsu System Walker & Salesforce</li>
+          <li>Executed Linux terminal operations, handled instance ports, storage changes, and log retrieval</li>
+          <li>Provided 24/7/365 production support for enterprise clients with P1/P2 incident management via ServiceNow</li>
           <li>Incident, change, and problem management using ServiceNow (ITIL v3) with monthly SLA reporting</li>
+          <li>Troubleshot NetBackup issues on Windows servers and assisted backup team with recovery operations</li>
+          <li>Coordinated with Japanese Level-2 counterparts on alerts, escalations, and production issues via calls and chat</li>
         </ul>
         <div style="margin-top:1rem;color:var(--accent);font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;">Full details →</div>
       </div>
@@ -588,7 +508,6 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   </div>
 </section>
 
-<!-- ── CONTACT ── -->
 <section class="section" id="contact">
   <div class="container">
     <div class="contact-wrap">
@@ -597,7 +516,7 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
         <h2 style="font-family:var(--display);font-size:2.6rem;font-weight:800;letter-spacing:-.02em;margin-bottom:1rem;margin-top:.3rem;line-height:1.1;">
           Open To<br><span style="background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Great Roles</span>
         </h2>
-        <p style="color:var(--muted2);font-size:.95rem;line-height:1.9;margin-bottom:2rem;">Looking for DevOps, Cloud, Kubernetes, and Platform Engineering opportunities where I can ship real impact.</p>
+        <p style="color:var(--muted2);font-size:.95rem;line-height:1.9;margin-bottom:2rem;">DevOps, Cloud, Kubernetes, and Platform Engineering opportunities where I can ship real impact and build reliable systems.</p>
         <div class="contact-links-wrap">
           <a href="mailto:mosespraveen96@gmail.com" class="contact-link">
             <div class="contact-link-icon">📧</div>
@@ -620,7 +539,7 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
       <div class="contact-card fade-up">
         <div class="availability"><div class="avail-dot"></div>Available for Opportunities</div>
         <h3>Let's Build Something</h3>
-        <p>Whether it's a full-time role, contract work, or a collaboration on an interesting infrastructure challenge — I'm all ears.</p>
+        <p>Whether it's a full-time role, contract work, or a collaboration on an interesting infrastructure challenge — I'm interested and ready to contribute.</p>
         <a href="mailto:mosespraveen96@gmail.com" class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:1rem;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
           Send Me a Message
@@ -634,9 +553,8 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
 <footer>
-  <span class="footer-text">© 2026 Praveen B · Chennai, India · B.E. EEE, Madha Engineering College</span>
+  <span class="footer-text">© 2026 Praveen B · Chennai, India · B.E. Electrical & Electronics</span>
   <div class="footer-links">
     <a href="https://github.com/MytPraveen" target="_blank">GitHub</a>
     <a href="https://linkedin.com/in/praveen-bhuvaneswaran" target="_blank">LinkedIn</a>
@@ -644,7 +562,6 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
   </div>
 </footer>
 
-<!-- ── MODAL ── -->
 <div class="overlay" id="overlay">
   <div class="modal" id="modal">
     <div class="modal-header">
@@ -660,7 +577,6 @@ footer{padding:2rem 2.5rem;border-top:1px solid var(--border);display:flex;align
 </div>
 
 <script>
-/* ── CURSOR ── */
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx-5+'px';cursor.style.top=my-5+'px';});
@@ -670,7 +586,6 @@ document.querySelectorAll('a,button,.project-card,.about-card,.exp-item,.contact
   el.addEventListener('mouseleave',()=>ring.classList.remove('hover'));
 });
 
-/* ── MOBILE DRAWER ── */
 const mobBtn=document.getElementById('mobMenuBtn');
 const mobDrawer=document.getElementById('mobDrawer');
 const mobOverlay=document.getElementById('mobOverlay');
@@ -682,28 +597,24 @@ mobClose.addEventListener('click',closeDrawer);
 mobOverlay.addEventListener('click',closeDrawer);
 document.querySelectorAll('.mob-link').forEach(l=>l.addEventListener('click',closeDrawer));
 
-/* ── TERMINAL ── */
 const tlines=[
-  {type:'cmd',text:'kubectl get nodes'},
-  {type:'out',text:'NAME         STATUS   ROLES    AGE'},
-  {type:'out',text:'k8s-master   Ready    control  42d'},
-  {type:'out',text:'k8s-worker1  Ready    <none>   42d'},
-  {type:'out',text:'k8s-worker2  Ready    <none>   42d'},
+  {type:'cmd',text:'kubectl get nodes -o wide'},
+  {type:'out',text:'NAME      STATUS   ROLES   AGE'},
+  {type:'out',text:'master    Ready    control 180d'},
+  {type:'out',text:'worker1   Ready    <none> 180d'},
   {type:'blank'},
-  {type:'cmd',text:'argocd app sync portfolio'},
-  {type:'warn',text:'Syncing application...'},
-  {type:'out',text:'✓ Application synced successfully'},
+  {type:'cmd',text:'docker images | grep praveendevops95'},
+  {type:'out',text:'praveendevops95/portfolio   v1.2.5  sha256:abc1234'},
+  {type:'out',text:'praveendevops95/blog       v1.0.0  sha256:def5678'},
   {type:'blank'},
-  {type:'cmd',text:'helm upgrade monitoring prometheus-stack'},
-  {type:'out',text:'Release "monitoring" has been upgraded'},
-  {type:'blank'},
-  {type:'cmd',text:'trivy image portfolio:latest'},
-  {type:'out',text:'Total: 0 (CRITICAL: 0, HIGH: 0)'},
+  {type:'cmd',text:'argocd app list'},
+  {type:'warn',text:'portfolio    Synced    Healthy  ✓'},
+  {type:'out',text:'monitoring   Synced    Healthy  ✓'},
 ];
 const tlContainer=document.getElementById('t-lines');
 let tli=0;
 function typeLine(){
-  if(tli>=tlines.length){tli=0;tlContainer.innerHTML='';setTimeout(typeLine,1500);return;}
+  if(tli>=tlines.length){tli=0;tlContainer.innerHTML='';setTimeout(typeLine,2000);return;}
   const l=tlines[tli];
   if(l.type==='blank'){tlContainer.innerHTML+='<br>';tli++;setTimeout(typeLine,200);return;}
   const d=document.createElement('div');
@@ -714,135 +625,125 @@ function typeLine(){
   (function typeChar(){
     if(ci<l.text.length){
       d.innerHTML=prefix+`<span class="${cls}">`+l.text.slice(0,++ci)+'</span>';
-      setTimeout(typeChar,l.type==='cmd'?55:20);
+      setTimeout(typeChar,l.type==='cmd'?50:15);
     }else{
       d.innerHTML=prefix+`<span class="${cls}">`+l.text+'</span>';
       tli++;
-      setTimeout(typeLine,l.type==='cmd'?300:80);
+      setTimeout(typeLine,l.type==='cmd'?400:100);
     }
   })();
 }
 typeLine();
 
-/* ── SCROLL ANIMATIONS ── */
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.12});
 document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
 
-/* ── SKILL BARS ── */
 const skillObs=new IntersectionObserver(entries=>entries.forEach(e=>{
   if(e.isIntersecting)e.target.querySelectorAll('.skill-bar-fill').forEach(b=>setTimeout(()=>b.style.width=b.dataset.w+'%',200));
 }),{threshold:.2});
 document.querySelectorAll('#skills').forEach(el=>skillObs.observe(el));
 
-/* ── MODAL DATA ── */
 const modals={
-  'about-cloud':{tag:'EXPERTISE',title:'Cloud & Infrastructure',sub:'AWS · Kubernetes · Terraform · Container Orchestration',body:`
-    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">Hands-on experience designing and operating cloud infrastructure on AWS — spanning compute, networking, storage, and identity. Comfortable with Kubernetes from cluster provisioning to workload scheduling and scaling, and with Terraform for repeatable Infrastructure as Code.</p></div>
+  'about-cloud':{tag:'EXPERTISE',title:'Cloud & Infrastructure',sub:'AWS · Kubernetes · Terraform · 6+ Years',body:`
+    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">6+ years of IT experience with 3.5 years focused on DevOps. Hands-on experience designing and operating cloud infrastructure on AWS — spanning compute (EC2), networking (VPC), storage (S3, EBS), and identity (IAM). Expert in Kubernetes cluster design, workload orchestration, and scaling patterns.</p></div>
     <div class="modal-section"><div class="modal-section-title">Core Capabilities</div><ul class="modal-list">
-      <li><span>▸</span>AWS services: EC2, S3, IAM, EKS, EBS, RDS, CloudWatch, VPC</li>
-      <li><span>▸</span>Kubernetes cluster management — deployments, namespaces, RBAC, HPA, pod scheduling</li>
-      <li><span>▸</span>Container orchestration with Docker and Docker Compose</li>
-      <li><span>▸</span>Infrastructure as Code with Terraform for repeatable environments</li>
-      <li><span>▸</span>Automation with Ansible for configuration management</li>
-      <li><span>▸</span>Load balancing, autoscaling, and high-availability patterns</li>
+      <li><span>▸</span>AWS: EC2, S3, IAM, EKS, EBS, RDS, VPC, CloudWatch, security groups</li>
+      <li><span>▸</span>Kubernetes: cluster provisioning, deployments, namespaces, RBAC, HPA, pod scheduling</li>
+      <li><span>▸</span>Terraform: Infrastructure as Code for repeatable, versioned infrastructure</li>
+      <li><span>▸</span>Ansible: configuration management and server automation</li>
+      <li><span>▸</span>Linux administration: system configuration, troubleshooting, performance tuning</li>
     </ul></div>
-    <div class="metric-row"><div class="metric-box"><div class="metric-val">AWS</div><div class="metric-label">Primary Cloud</div></div><div class="metric-box"><div class="metric-val">K8s</div><div class="metric-label">Orchestration</div></div><div class="metric-box"><div class="metric-val">IaC</div><div class="metric-label">Terraform</div></div></div>`},
-  'about-cicd':{tag:'EXPERTISE',title:'CI/CD & GitOps',sub:'Jenkins · ArgoCD · Helm · SonarQube · Nexus · Trivy',body:`
-    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">Built full-lifecycle automated pipelines that take code from commit to production without manual intervention. Quality gates via SonarQube, artifact management via Nexus, and security scanning via Trivy and OWASP — all integrated before ArgoCD syncs the desired state to the cluster.</p></div>
+    <div class="metric-row"><div class="metric-box"><div class="metric-val">6+</div><div class="metric-label">Years IT</div></div><div class="metric-box"><div class="metric-val">3.5</div><div class="metric-label">Years DevOps</div></div><div class="metric-box"><div class="metric-val">AWS</div><div class="metric-label">Cloud</div></div></div>`},
+  'about-cicd':{tag:'EXPERTISE',title:'CI/CD & GitOps',sub:'Jenkins · ArgoCD · SonarQube · Security',body:`
+    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">Full-lifecycle automated pipelines that take code from commit to production without manual intervention. Quality gates via SonarQube, artifact versioning via Nexus, and layered security scanning via Trivy and OWASP — all integrated before ArgoCD syncs desired state to Kubernetes.</p></div>
     <div class="modal-section"><div class="modal-section-title">Pipeline Architecture</div><ul class="modal-list">
-      <li><span>▸</span>Jenkins: multi-stage pipelines — build, test, quality gate, scan, push, deploy</li>
-      <li><span>▸</span>Maven: Java build and dependency management</li>
-      <li><span>▸</span>SonarQube: static code analysis and quality gate enforcement</li>
-      <li><span>▸</span>Nexus: artifact repository for versioned build outputs</li>
-      <li><span>▸</span>Docker: multi-stage builds for optimized, lean images</li>
-      <li><span>▸</span>Trivy + OWASP Dependency Check + OWASP ZAP: layered security scanning</li>
-      <li><span>▸</span>Helm: templated Kubernetes manifests for environment-specific values</li>
-      <li><span>▸</span>ArgoCD: GitOps continuous delivery with automatic reconciliation</li>
+      <li><span>▸</span>Jenkins: multi-stage pipelines (build, test, quality gate, scan, push, deploy)</li>
+      <li><span>▸</span>Maven: Java build automation and dependency management</li>
+      <li><span>▸</span>SonarQube: static code analysis with hard quality gates</li>
+      <li><span>▸</span>Nexus: artifact repository with versioning and release management</li>
+      <li><span>▸</span>Docker: multi-stage builds for lean, optimized container images</li>
+      <li><span>▸</span>Trivy + OWASP: layered container and dependency security scanning</li>
+      <li><span>▸</span>ArgoCD: GitOps continuous delivery with auto-reconciliation</li>
     </ul></div>
-    <div class="modal-highlight"><p>$ git push origin main<br>→ Jenkins triggers build + Maven test<br>→ SonarQube quality gate passes<br>→ Docker image built & Trivy scanned<br>→ Artifact stored in Nexus<br>→ ArgoCD detects Helm update → syncs cluster ✓</p></div>`},
-  'about-homelab':{tag:'EXPERTISE',title:'Kubernetes Homelab',sub:'Proxmox · 3-Node Cluster · Full GitOps',body:`
-    <div class="modal-section"><div class="modal-section-title">Setup</div><p class="modal-text">A personal, production-grade Kubernetes lab built on Proxmox virtualization — not a toy cluster, but a real environment with everything needed to mirror enterprise workloads.</p></div>
-    <div class="modal-section"><div class="modal-section-title">Components</div><ul class="modal-list">
-      <li><span>▸</span>3-node cluster: 1 control plane + 2 worker nodes on Proxmox VMs</li>
-      <li><span>▸</span>MetalLB for bare-metal load balancing (no cloud provider needed)</li>
-      <li><span>▸</span>NGINX Ingress Controller for HTTP routing and TLS termination</li>
-      <li><span>▸</span>Horizontal Pod Autoscaler for dynamic scaling based on CPU/memory</li>
-      <li><span>▸</span>Resource limits and pod scheduling policies configured</li>
-      <li><span>▸</span>ArgoCD for GitOps-driven deployments via Helm charts</li>
-      <li><span>▸</span>Prometheus + Grafana for full cluster observability</li>
+    <div class="modal-highlight"><p>git push → Jenkins build+test → SonarQube gate → Docker scan → ArgoCD sync ✓</p></div>`},
+  'about-ops':{tag:'EXPERTISE',title:'Observability & Automation',sub:'Prometheus · Grafana · Ansible · Production Support',body:`
+    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">3.5+ years building monitoring systems, alerting infrastructure, and automation. Experienced in production support (24/7/365), incident management (ServiceNow ITIL v3), and infrastructure automation that reduces manual toil and improves reliability.</p></div>
+    <div class="modal-section"><div class="modal-section-title">Key Capabilities</div><ul class="modal-list">
+      <li><span>▸</span>Prometheus: metrics collection, custom scrape configs, PromQL queries</li>
+      <li><span>▸</span>Grafana: dashboard design, templating, alerting rules</li>
+      <li><span>▸</span>Ansible: playbook development, server patching, configuration automation</li>
+      <li><span>▸</span>ServiceNow: ITIL v3 incident/change/problem management</li>
+      <li><span>▸</span>Production support: troubleshooting, performance tuning, on-call operations</li>
     </ul></div>
-    <div class="metric-row"><div class="metric-box"><div class="metric-val">3</div><div class="metric-label">Nodes</div></div><div class="metric-box"><div class="metric-val">GitOps</div><div class="metric-label">Deployment</div></div><div class="metric-box"><div class="metric-val">24/7</div><div class="metric-label">Uptime Target</div></div></div>`},
-  'proj-gitops':{tag:'PROJECT 01',title:'GitOps CI/CD Pipeline',sub:'Zero-touch automated deployment from code to cluster',body:`
-    <div class="modal-section"><div class="modal-section-title">Project Overview</div><p class="modal-text">A complete CI/CD pipeline that automates the entire software delivery lifecycle with built-in code quality gates, artifact management, and multi-layer security scanning.</p></div>
-    <div class="modal-section"><div class="modal-section-title">Pipeline Stages</div><ul class="modal-list">
+    <div class="metric-row"><div class="metric-box"><div class="metric-val">24/7</div><div class="metric-label">Support</div></div><div class="metric-box"><div class="metric-val">ITIL</div><div class="metric-label">Certified</div></div><div class="metric-box"><div class="metric-val">Multi</div><div class="metric-label">Cloud</div></div></div>`},
+  'proj-gitops':{tag:'PROJECT 01',title:'GitOps CI/CD Pipeline',sub:'Fully automated zero-touch deployment',body:`
+    <div class="modal-section"><div class="modal-section-title">Project Overview</div><p class="modal-text">A complete CI/CD pipeline that automates the entire software delivery lifecycle — from code commit to production deployment. Includes automated testing, quality gates, security scanning, artifact versioning, and GitOps-driven Kubernetes deployments.</p></div>
+    <div class="modal-section"><div class="modal-section-title">Pipeline Flow</div><ul class="modal-list">
       <li><span>1.</span>Code push triggers Jenkins webhook</li>
-      <li><span>2.</span>Maven runs unit tests and builds the artifact</li>
+      <li><span>2.</span>Maven builds and runs unit tests</li>
       <li><span>3.</span>SonarQube performs static analysis — pipeline fails if quality gate not met</li>
-      <li><span>4.</span>Artifact stored and versioned in Nexus repository</li>
-      <li><span>5.</span>Docker multi-stage build creates an optimized container image</li>
-      <li><span>6.</span>Trivy + OWASP Dependency Check scan image for vulnerabilities</li>
-      <li><span>7.</span>Image pushed to container registry with semantic versioning</li>
-      <li><span>8.</span>ArgoCD detects Helm chart update, syncs to Kubernetes cluster</li>
+      <li><span>4.</span>Artifact versioned and stored in Nexus repository</li>
+      <li><span>5.</span>Docker multi-stage build creates optimized container image</li>
+      <li><span>6.</span>Trivy scans image for vulnerabilities, OWASP checks dependencies</li>
+      <li><span>7.</span>Image pushed to registry with semantic versioning</li>
+      <li><span>8.</span>ArgoCD detects Helm chart update, syncs to Kubernetes</li>
       <li><span>9.</span>Rolling deployment with health checks and automatic rollback</li>
     </ul></div>
-    <div class="modal-section"><div class="modal-section-title">Tech Stack</div><div class="modal-pills"><span class="modal-pill">Jenkins</span><span class="modal-pill">Maven</span><span class="modal-pill">SonarQube</span><span class="modal-pill">Nexus</span><span class="modal-pill">Docker</span><span class="modal-pill">GitHub</span><span class="modal-pill">ArgoCD</span><span class="modal-pill">Kubernetes</span><span class="modal-pill">Helm</span><span class="modal-pill">Trivy</span><span class="modal-pill">OWASP ZAP</span></div></div>
-    <div class="metric-row"><div class="metric-box"><div class="metric-val">~4m</div><div class="metric-label">Avg Deploy Time</div></div><div class="metric-box"><div class="metric-val">0</div><div class="metric-label">Manual Steps</div></div><div class="metric-box"><div class="metric-val">Auto</div><div class="metric-label">Rollback</div></div></div>`},
-  'proj-homelab':{tag:'PROJECT 02',title:'Kubernetes Homelab',sub:'Production-grade bare-metal cluster on Proxmox',body:`
-    <div class="modal-section"><div class="modal-section-title">Architecture</div><p class="modal-text">Built a 3-node Kubernetes cluster from scratch on Proxmox VMs, simulating a real enterprise environment without cloud provider assistance. Every component manually configured for maximum learning and control.</p></div>
-    <div class="modal-section"><div class="modal-section-title">Infrastructure Components</div><ul class="modal-list">
-      <li><span>▸</span>Proxmox VE: hypervisor managing 3 VMs with dedicated resource allocation</li>
-      <li><span>▸</span>kubeadm: cluster bootstrapping with custom network configuration</li>
-      <li><span>▸</span>Flannel / Calico: pod networking and network policy enforcement</li>
-      <li><span>▸</span>MetalLB: Layer 2 load balancer for bare-metal IP assignment</li>
-      <li><span>▸</span>NGINX Ingress: TLS termination and HTTP/HTTPS routing rules</li>
-      <li><span>▸</span>HPA: horizontal pod autoscaling based on CPU and memory metrics</li>
-      <li><span>▸</span>Resource limits: enforced per namespace and per pod</li>
-    </ul></div>
-    <div class="modal-section"><div class="modal-section-title">Tech Stack</div><div class="modal-pills"><span class="modal-pill">Proxmox</span><span class="modal-pill">Kubernetes</span><span class="modal-pill">MetalLB</span><span class="modal-pill">NGINX Ingress</span><span class="modal-pill">HPA</span><span class="modal-pill">ArgoCD</span><span class="modal-pill">Helm</span><span class="modal-pill">Trivy</span></div></div>
-    <div class="metric-row"><div class="metric-box"><div class="metric-val">3</div><div class="metric-label">K8s Nodes</div></div><div class="metric-box"><div class="metric-val">HA</div><div class="metric-label">Architecture</div></div><div class="metric-box"><div class="metric-val">GitOps</div><div class="metric-label">Delivery</div></div></div>`},
-  'proj-monitoring':{tag:'PROJECT 03',title:'Observability Stack',sub:'Prometheus · Grafana · Alertmanager',body:`
-    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">Deployed a full observability stack to gain deep visibility into application and infrastructure health across the Kubernetes homelab. Custom dashboards, alert rules, and metric pipelines provide real-time insight at every layer of the stack.</p></div>
+    <div class="modal-section"><div class="modal-section-title">Tech Stack</div><div class="modal-pills"><span class="modal-pill">Jenkins</span><span class="modal-pill">Maven</span><span class="modal-pill">SonarQube</span><span class="modal-pill">Nexus</span><span class="modal-pill">Docker</span><span class="modal-pill">ArgoCD</span><span class="modal-pill">Kubernetes</span><span class="modal-pill">Helm</span><span class="modal-pill">Trivy</span></div></div>
+    <div class="metric-row"><div class="metric-box"><div class="metric-val">0</div><div class="metric-label">Manual Steps</div></div><div class="metric-box"><div class="metric-val">Auto</div><div class="metric-label">Rollback</div></div><div class="metric-box"><div class="metric-val">GitOps</div><div class="metric-label">Delivery</div></div></div>`},
+  'proj-monitoring':{tag:'PROJECT 02',title:'Monitoring & Observability',sub:'Production-grade metrics and alerting',body:`
+    <div class="modal-section"><div class="modal-section-title">Architecture</div><p class="modal-text">A comprehensive observability stack that provides real-time visibility into application and infrastructure health. Prometheus scrapes metrics from multiple sources, Grafana renders custom dashboards, and Alertmanager routes notifications based on severity.</p></div>
     <div class="modal-section"><div class="modal-section-title">Stack Components</div><ul class="modal-list">
-      <li><span>▸</span>Prometheus: metrics scraping from node-exporter, kube-state-metrics, and cAdvisor</li>
-      <li><span>▸</span>Grafana: custom dashboards for cluster health, pod status, and resource utilization</li>
+      <li><span>▸</span>Prometheus: metrics collection from node-exporter, kube-state-metrics, cAdvisor</li>
+      <li><span>▸</span>Grafana: custom dashboards for cluster health, pod status, resource utilization</li>
       <li><span>▸</span>Alertmanager: alert routing with severity levels and notification channels</li>
-      <li><span>▸</span>kube-state-metrics: Kubernetes object state metrics (deployments, pods, nodes)</li>
-      <li><span>▸</span>node-exporter: host-level CPU, memory, disk, and network metrics</li>
+      <li><span>▸</span>kube-state-metrics: Kubernetes object state (deployments, pods, nodes)</li>
+      <li><span>▸</span>node-exporter: host-level CPU, memory, disk, network metrics</li>
+      <li><span>▸</span>PromQL: custom queries for derived metrics and analysis</li>
     </ul></div>
-    <div class="modal-section"><div class="modal-section-title">Tech Stack</div><div class="modal-pills"><span class="modal-pill">Prometheus</span><span class="modal-pill">Grafana</span><span class="modal-pill">Alertmanager</span><span class="modal-pill">Helm</span><span class="modal-pill">kube-state-metrics</span><span class="modal-pill">node-exporter</span></div></div>
-    <div class="metric-row"><div class="metric-box"><div class="metric-val">Real-time</div><div class="metric-label">Metrics</div></div><div class="metric-box"><div class="metric-val">Custom</div><div class="metric-label">Dashboards</div></div><div class="metric-box"><div class="metric-val">Alerts</div><div class="metric-label">Configured</div></div></div>`},
-  'exp-devops':{tag:'EXPERIENCE',title:'DevOps Engineer',sub:'Fujitsu Consulting India · Aug 2022 – Present',body:`
-    <div class="modal-section"><div class="modal-section-title">Role Overview</div><p class="modal-text">Transitioned into DevOps from Cloud Infrastructure Support within the same organisation. Responsible for designing and operating CI/CD pipelines, container infrastructure, code quality tooling, and observability stacks for enterprise clients.</p></div>
-    <div class="modal-section"><div class="modal-section-title">Key Responsibilities</div><ul class="modal-list">
-      <li><span>▸</span>Built and maintained Jenkins pipelines for automated build, test, and deployment — reducing manual effort and improving release efficiency</li>
-      <li><span>▸</span>Configured Jenkins jobs, plugins, and automated build workflows</li>
-      <li><span>▸</span>Integrated SonarQube for static code analysis and Nexus for artifact management</li>
-      <li><span>▸</span>Containerized applications using Docker with multi-stage builds</li>
-      <li><span>▸</span>Deployed and monitored containerised workloads on Kubernetes for high availability</li>
-      <li><span>▸</span>Implemented GitOps-based deployments using ArgoCD for automated, consistent delivery</li>
-      <li><span>▸</span>Set up Prometheus + Grafana monitoring with custom dashboards and alert rules</li>
-      <li><span>▸</span>Worked with AWS services: EC2, S3, EBS, VPC</li>
-      <li><span>▸</span>Supported Linux and Windows environments; used ServiceNow for ticket tracking</li>
+    <div class="modal-section"><div class="modal-section-title">Tech Stack</div><div class="modal-pills"><span class="modal-pill">Prometheus</span><span class="modal-pill">Grafana</span><span class="modal-pill">Alertmanager</span><span class="modal-pill">Helm</span><span class="modal-pill">Kubernetes</span></div></div>
+    <div class="metric-row"><div class="metric-box"><div class="metric-val">Real-time</div><div class="metric-label">Metrics</div></div><div class="metric-box"><div class="metric-val">Custom</div><div class="metric-label">Dashboards</div></div><div class="metric-box"><div class="metric-val">Multi</div><div class="metric-label">Source</div></div></div>`},
+  'proj-portfolio':{tag:'PROJECT 03',title:'Portfolio & Blog Platform',sub:'Full-stack application on Kubernetes',body:`
+    <div class="modal-section"><div class="modal-section-title">Overview</div><p class="modal-text">A complete full-stack platform showcasing end-to-end DevOps practices. Features a frontend (HTML/CSS/JS with modern animations), FastAPI backend, persistent database, and GitOps-driven Kubernetes deployment. This portfolio and blog system demonstrates real production engineering.</p></div>
+    <div class="modal-section"><div class="modal-section-title">Architecture</div><ul class="modal-list">
+      <li><span>▸</span>Frontend: HTML5, CSS3, Vanilla JavaScript with smooth animations and responsive design</li>
+      <li><span>▸</span>Backend: FastAPI Python framework with REST endpoints</li>
+      <li><span>▸</span>Database: PostgreSQL with persistent volume claims on Kubernetes</li>
+      <li><span>▸</span>Deployment: Kubernetes manifests with Helm templating</li>
+      <li><span>▸</span>CI/CD: ArgoCD monitors Git repo, auto-syncs manifests to cluster</li>
+      <li><span>▸</span>Networking: NGINX Ingress for HTTP/HTTPS routing and TLS termination</li>
+      <li><span>▸</span>Security: Sealed Secrets for sensitive data, RBAC policies</li>
     </ul></div>
-    <div class="modal-section"><div class="modal-section-title">Technologies Used</div><div class="modal-pills"><span class="modal-pill">Jenkins</span><span class="modal-pill">Maven</span><span class="modal-pill">SonarQube</span><span class="modal-pill">Nexus</span><span class="modal-pill">Docker</span><span class="modal-pill">Kubernetes</span><span class="modal-pill">ArgoCD</span><span class="modal-pill">Helm</span><span class="modal-pill">Prometheus</span><span class="modal-pill">Grafana</span><span class="modal-pill">Trivy</span><span class="modal-pill">AWS</span><span class="modal-pill">GitHub</span></div></div>`},
-  'exp-cloud':{tag:'EXPERIENCE',title:'Cloud Infrastructure Support',sub:'Fujitsu Consulting India · Feb 2020 – Jul 2022',body:`
-    <div class="modal-section"><div class="modal-section-title">Role Overview</div><p class="modal-text">2.5 years managing enterprise cloud and server infrastructure for Japanese clients, building strong foundations in Linux administration, networking, cloud operations, and ITSM. Served as the bridge between Fujitsu and Japanese enterprise client counterparts for all P1/P2 incidents.</p></div>
+    <div class="modal-section"><div class="modal-section-title">Tech Stack</div><div class="modal-pills"><span class="modal-pill">HTML/CSS/JS</span><span class="modal-pill">FastAPI</span><span class="modal-pill">PostgreSQL</span><span class="modal-pill">Kubernetes</span><span class="modal-pill">Helm</span><span class="modal-pill">ArgoCD</span><span class="modal-pill">NGINX</span></div></div>
+    <div class="metric-row"><div class="metric-box"><div class="metric-val">Full</div><div class="metric-label">Stack</div></div><div class="metric-box"><div class="metric-val">GitOps</div><div class="metric-label">Deployed</div></div><div class="metric-box"><div class="metric-val">K8s</div><div class="metric-label">Native</div></div></div>`},
+  'exp-devops':{tag:'EXPERIENCE',title:'DevOps Engineer',sub:'Fujitsu Consulting India · Dec 2023 – June 2026',body:`
+    <div class="modal-section"><div class="modal-section-title">Role Overview</div><p class="modal-text">Transitioned into DevOps engineer role after 3+ years in cloud infrastructure support. Responsible for designing and operating CI/CD pipelines, container infrastructure, code quality tooling, and observability stacks for enterprise clients.</p></div>
+    <div class="modal-section"><div class="modal-section-title">Key Achievements</div><ul class="modal-list">
+      <li><span>▸</span>Built end-to-end Jenkins pipelines with Maven, SonarQube, and ArgoCD integration</li>
+      <li><span>▸</span>Containerized applications using Docker with multi-stage builds for optimization</li>
+      <li><span>▸</span>Deployed and scaled Kubernetes workloads with HPA, resource limits, and rolling updates</li>
+      <li><span>▸</span>Implemented Prometheus + Grafana monitoring with custom dashboards and alerting</li>
+      <li><span>▸</span>Integrated security scanning (Trivy, OWASP) into CI/CD pipelines</li>
+      <li><span>▸</span>Automated infrastructure provisioning with Terraform and Ansible</li>
+      <li><span>▸</span>Worked with AWS services: EC2, S3, VPC, IAM, EBS, CloudWatch</li>
+    </ul></div>
+    <div class="modal-section"><div class="modal-section-title">Technologies</div><div class="modal-pills"><span class="modal-pill">Jenkins</span><span class="modal-pill">Maven</span><span class="modal-pill">SonarQube</span><span class="modal-pill">Nexus</span><span class="modal-pill">Docker</span><span class="modal-pill">Kubernetes</span><span class="modal-pill">ArgoCD</span><span class="modal-pill">Helm</span><span class="modal-pill">Prometheus</span><span class="modal-pill">Grafana</span><span class="modal-pill">Terraform</span><span class="modal-pill">AWS</span></div></div>`},
+  'exp-cloud':{tag:'EXPERIENCE',title:'Cloud Infrastructure Support',sub:'Fujitsu Consulting India · Feb 2020 – Nov 2023',body:`
+    <div class="modal-section"><div class="modal-section-title">Role Overview</div><p class="modal-text">3.5+ years managing enterprise cloud and server infrastructure for Japanese corporate clients. Built strong foundations in Linux administration, networking, cloud operations, ITIL-based ITSM, and 24/7/365 production support. Served as bridge between Fujitsu and Japanese enterprises for P1/P2 incidents.</p></div>
     <div class="modal-section"><div class="modal-section-title">Key Responsibilities</div><ul class="modal-list">
-      <li><span>▸</span>Managed cloud infrastructure — server scaling, storage provisioning, and network configuration</li>
-      <li><span>▸</span>Configured VRF routing, interfaces, BGP neighbor IPs, and managed DEX routing and deletions</li>
-      <li><span>▸</span>Executed Linux terminal operations, instance modifications, port and storage changes</li>
-      <li><span>▸</span>Provided 24/7/365 production support via Fujitsu System Walker Centric Manager and Salesforce monitoring</li>
-      <li><span>▸</span>Performed bi-weekly log retrieval and monthly Windows server reboots on planned maintenance days</li>
-      <li><span>▸</span>Assisted backup team in troubleshooting NetBackup issues on cloud-hosted Windows servers</li>
+      <li><span>▸</span>Managed cloud infrastructure — server scaling, storage provisioning, network configuration</li>
+      <li><span>▸</span>Configured VRF routing, BGP neighbor IPs, DEX routing, and interface management</li>
+      <li><span>▸</span>Executed Linux terminal operations and instance modifications (ports, storage)</li>
+      <li><span>▸</span>Provided 24/7/365 production support via Fujitsu System Walker and Salesforce monitoring</li>
       <li><span>▸</span>Incident, Problem, and Change Management using ServiceNow (ITIL v3)</li>
-      <li><span>▸</span>Prepared weekly and monthly SLA reports for Japanese clients</li>
-      <li><span>▸</span>Communicated with Japanese Level-2 counterparts on P1/P2 alerts via calls, chat, and email</li>
+      <li><span>▸</span>Troubleshot NetBackup issues and assisted backup team with Windows server recovery</li>
+      <li><span>▸</span>Prepared weekly and monthly SLA reports for Japanese client counterparts</li>
+      <li><span>▸</span>Communicated with Japanese Level-2 teams on P1/P2 alerts via calls, chat, and email</li>
     </ul></div>
-    <div class="modal-section"><div class="modal-section-title">Technologies Used</div><div class="modal-pills"><span class="modal-pill">Linux</span><span class="modal-pill">Windows Server</span><span class="modal-pill">AWS</span><span class="modal-pill">ServiceNow</span><span class="modal-pill">Shell Scripting</span><span class="modal-pill">BGP / VRF Routing</span><span class="modal-pill">NetBackup</span><span class="modal-pill">Salesforce</span></div></div>
-    <div class="metric-row"><div class="metric-box"><div class="metric-val">2.5y</div><div class="metric-label">Duration</div></div><div class="metric-box"><div class="metric-val">JP</div><div class="metric-label">Client Region</div></div><div class="metric-box"><div class="metric-val">ITIL v3</div><div class="metric-label">Framework</div></div></div>`}
+    <div class="modal-section"><div class="modal-section-title">Technologies</div><div class="modal-pills"><span class="modal-pill">Linux</span><span class="modal-pill">Windows</span><span class="modal-pill">AWS</span><span class="modal-pill">ServiceNow</span><span class="modal-pill">ITIL v3</span><span class="modal-pill">BGP Routing</span><span class="modal-pill">NetBackup</span></div></div>
+    <div class="metric-row"><div class="metric-box"><div class="metric-val">3.5</div><div class="metric-label">Years</div></div><div class="metric-box"><div class="metric-val">24/7</div><div class="metric-label">Support</div></div><div class="metric-box"><div class="metric-val">JP</div><div class="metric-label">Clients</div></div></div>`}
 };
 
-/* ── MODAL LOGIC ── */
 const overlay=document.getElementById('overlay');
 const modalClose=document.getElementById('modal-close');
 function openModal(key){
