@@ -82,11 +82,11 @@ spec:
   }
 
   environment {
-    IMAGE_NAME         = "nexus.company.com:8082/docker-private/order-management-backend"
+    IMAGE_NAME         = "registry.praveeninfra.online/docker-private/order-management-backend"
     IMAGE_TAG          = "v${BUILD_NUMBER}"
-    GITOPS_REPO        = "github.com:company/order-management-gitops.git"
+    GITOPS_REPO        = "github.com:MytPraveen/portfolio-gitops.git"
     GIT_USER_NAME      = "Jenkins CI"
-    GIT_USER_EMAIL     = "jenkins@company.com"
+    GIT_USER_EMAIL     = "jenkins@ci.com"
     TRIVY_SEVERITY     = "CRITICAL"
     TRIVY_EXIT_CODE    = "1"
   }
@@ -99,7 +99,7 @@ spec:
         sh 'echo "Code checked out from GitHub"'
 
         script {
-          GIT_COMMIT_SHORT = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+          def GIT_COMMIT_SHORT = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
           env.GIT_COMMIT  = GIT_COMMIT_SHORT
           env.BUILD_DATE  = sh(script: "date -u +'%Y-%m-%dT%H:%M:%SZ'", returnStdout: true).trim()
           echo "Git Commit ID: ${env.GIT_COMMIT}"
@@ -182,7 +182,7 @@ spec:
               --tarPath=/workspace/image.tar \
               --destination=${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT} \
               --cache=true \
-              --cache-repo=${IMAGE_NAME}-cache \
+              --cache-repo=registry.praveeninfra.online/docker-private/order-management-backend-cache \
               --build-arg BUILD_DATE=${BUILD_DATE} \
               --build-arg VCS_REF=${GIT_COMMIT}
 
@@ -245,7 +245,7 @@ spec:
               --destination=${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT} \
               --destination=${IMAGE_NAME}:latest \
               --cache=true \
-              --cache-repo=${IMAGE_NAME}-cache \
+              --cache-repo=registry.praveeninfra.online/docker-private/order-management-backend-cache \
               --cleanup \
               --build-arg BUILD_DATE=${BUILD_DATE} \
               --build-arg VCS_REF=${GIT_COMMIT}
@@ -276,7 +276,7 @@ spec:
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            sed -i 's|nexus.company.com:8082/docker-private/order-management-backend:.*|nexus.company.com:8082/docker-private/order-management-backend:'"${IMAGE_TAG}"'|g' staging/backend/deployment.yaml
+            sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${IMAGE_TAG}-${GIT_COMMIT}|g" staging/backend/deployment.yaml
 
             git add staging/backend/deployment.yaml
             git commit -m "ci: update staging backend to ${IMAGE_TAG}-${GIT_COMMIT} [build #${BUILD_NUMBER}]" || true
