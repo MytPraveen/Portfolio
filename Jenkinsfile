@@ -351,7 +351,7 @@ spec:
   post {
 
     success {
-      echo '''
+      echo """
         =========================================
         PIPELINE SUCCESS
         
@@ -379,7 +379,7 @@ spec:
         Trivy Report :
         ${BUILD_URL}artifact/trivy-report.json
         =========================================
-      '''
+      """
     }
 
     failure {
